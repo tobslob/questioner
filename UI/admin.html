@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="shortcut icon" type="image/png" href="images/Meetup-icon.png"/>
+	<title>MeetUP</title>
+	
+	<!-- google fonts -->
+	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+	
+	<!-- font awesome -->
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	
+	<!-- main css -->
+	<link rel="stylesheet" href="stylesheet.css"/>
+	
+</head>
+<body>
+ <!-- nav -->
+	
+	<nav>
+        <ul>
+           <div class="nav-logo">
+               <li><a href="index.html" class="logo">MEETUP</a></li>
+           </div>
+
+           <div class="nav-menu">
+           <li><a href="meetuppostpage.html">Meet Up</a></li>
+           </div>
+        </ul>
+    </nav>
+<!-- end of nav -->
+	
+<!--Admin panel begins here-->
+<div class="adminheader">
+    <div class="icon"></div>
+ </div>
+<div class="admin-main">
+    <div class="sidebar">
+        <ul class="list">
+
+            <li data-target="#updatepost" ><i class="fa fa-user">Update Post</i></li>
+            <li data-target="#createmeetup" ><i class="fa fa-edit">Create Meetup</i></li>
+            <li data-target="#managemeetup" ><i class="fa fa-cogs">Manage Meetup</i></li>
+            <li data-target="#logout" ><i class="fa fa-sign-out">Logout</i></li>
+
+        </ul>
+    </div>   
+  <div class="content">
+    <div class="panel active" id="updatepost">
+        <form class="adminform" id="reused_form" >
+                        <p class="name">
+                            <input name="post-title" type="text" class="post-input" required placeholder="Post Title" id="post-title" />
+                        </p>
+                        
+                        <p class="text">
+                            <textarea name="message" class="post-input" id="desc" placeholder="Description"></textarea>
+                        </p>
+                        <p class="file">
+                            <input name="image" type="file" id="file" class="post-input">
+                        </p>
+                        <div class="submit">
+                            <button type="submit" class="button-yellow">SUBMIT</button>
+                            <div class="ease"></div>
+                        </div>
+                    </form>
+    </div>
+    <div class="panel" id="createmeetup">
+        <form class="adminform" id="reused_form Meetupform">
+                        <p class="name">
+                            <input name="post-title" type="text" class="post-input" required placeholder="Meetup Title" id="post-title meetup-title" />
+                        </p>
+                        <div class="metadata">
+                          <div class="datloc">
+                            <p>
+                            <input type="datetime-local" id="meetup-time"
+                                   name="meeting-time" value="2018-12-28T19:30" min="2018-12-07T00:00" max="2050-06-14T00:00">
+                            </p>
+                            <p>
+                            <input name="location" type="text" class="post-input" required placeholder="Location" id="post-location" /></p>
+                          </div>
+                        </div>
+                        <p class="text">
+                            <textarea name="message" class="post-input" id="desc meetupdesc" placeholder="Description"></textarea>
+                        </p>
+                        <p class="name">
+                            <input name="post-tags" type="text" class="post-input" required placeholder="Tags. separated with comma" id="post-tags" />
+                        </p>
+                        <p class="file">
+                            <input name="image" type="file" id="file" class="post-input">
+                        </p>
+                        <div class="submit">
+                            <button type="submit" class="button-yellow">SUBMIT</button>
+                            <div class="ease"></div>
+                        </div>
+                    </form>
+    
+    </div>
+      <div class="panel" id="managemeetup">I am manage post</div>
+      <div class="panel" id="logout">Click <span class="logout-link"><a href="index.html">here</a></span> to logout</div>
+  </div>
+</div>
+ 
+	
+	
+	
+<!-- Admin panel ends here-->
+    
+<!-- footer -->		
+<footer>
+	<div class="footer-text">
+		<h3>copyright &copy 2018. All rights reserved</h3>
+	</div>
+	<div class="footer-icons">
+		<a href="#"><i class="fa fa-facebook-square"></i></a>
+		<a href="#"><i class="fa fa-google-plus-g"></i></a>
+		<a href="#"><i class="fa fa-twitter-square"></i></a>
+		<a href="#"><i class="fa fa-instagram"></i></a>
+	</div>
+</footer>	
+  <script src="javascript.js"></script>  
+</body>
+</html>
