@@ -155,7 +155,8 @@ nav ul li a:hover {
         margin-left: 0;
         padding-left: 3%;
         top: 50%;
-        padding-right: 3 width: 320px;
+        padding-right: 3px;
+        width: 320px;
         height: 400px;
         color: #fff;
         top: 100%;
