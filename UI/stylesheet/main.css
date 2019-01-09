@@ -123,7 +123,7 @@ nav ul li a:hover {
 
 /*#######################################################################*/
 
-#banner {
+#banners {
     min-height: 80vh;
     background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
     background-image: url("/images/background.png");
