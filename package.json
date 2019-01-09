@@ -4,7 +4,9 @@
   "description": "Questionnaire RESTful api",
   "main": "index.js",
   "dependencies": {
-    "circular-json": "^0.5.9"
+    "body-parser": "^1.18.3",
+    "circular-json": "^0.5.9",
+    "express": "^4.16.4"
   },
   "devDependencies": {
     "eslint": "^5.12.0",
