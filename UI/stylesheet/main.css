@@ -355,3 +355,279 @@ input[type="email"] {
         background-color: #191716;
     }
 }
+
+/* Admin panel */
+
+
+nav ul {
+    padding: 0;
+    margin: 0;
+}
+
+nav li {
+
+    list-style-type: none;
+    margin: 0;
+    position: relative;
+    text-align: center;
+    color: #B3B3B3;
+}
+
+.adminheader {
+    width: 100%;
+    height: 90px;;
+    background-color: black;
+    text-align: center;
+}
+
+.icon {
+    display: inline-block;
+}
+
+.icon img {
+    height: 80px;
+    background-color: white;
+    border-radius: 50px;
+    display: block;
+    ;
+}
+
+.admin-main {
+    display: flex;
+}
+
+.sidebar {
+    flex: 1;
+    height: 650px;
+    background-color: black;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    position: relative;
+    margin: 0px 0px;
+}
+
+.sidebar ul li {
+    text-decoration: none;
+    border-bottom: 2px solid gray;
+    font-family: sans-serif;
+    text-decoration: none;
+    display: block;
+    font-size: 0px;
+    padding: 20px 0px;
+    color: #e6af2e;
+    cursor: pointer;
+}
+
+
+
+.sidebar ul li:hover {
+    color: #fff;
+    background-color: #e6af2e;
+}
+
+.sidebar ul li a {
+    color: white;
+}
+
+.sidebar ul li .fa {
+    font-size: 20px;
+    margin: 30px;
+
+}
+
+.content {
+    flex: 5;
+    background-image: url(images/background.jpg);
+    height: 530px;
+    background-color: #eBe2db;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+
+#post h2 {
+    color: white;
+}
+
+
+.panel {
+    display: none;
+    background-color: #191716;
+    padding-left: 35px;
+    padding-right: 35px;
+    padding-top: 35px;
+    padding-bottom: 50px;
+    width: 50%;
+    align-content: center;
+    position: relative;
+    margin-top: 30px;
+    margin-left: 260px;
+    border-radius: 7px;
+}
+
+@media only screen and (max-width: 580px) {
+    .panel {
+        left: 3%;
+        margin-right: 3%;
+        width: 88%;
+        margin-left: 0;
+        padding-left: 3%;
+        padding-right: 3%;
+    }
+}
+
+
+.panel.active {
+    display: block;
+}
+
+
+
+.panel #post-title {
+    background-image: url(images/title-icon.png);
+    background-size: 30px 30px;
+    background-position: 11px 8px;
+    background-repeat: no-repeat;
+}
+
+.panel #post-title:focus {
+    background-image: url(images/title-icon.png);
+    background-size: 30px 30px;
+    background-position: 11px 8px;
+    background-repeat: no-repeat;
+}
+
+.panel #desc {
+    background-image: url(images/desc-icon.png);
+    background-size: 30px 30px;
+    background-position: 11px 8px;
+    background-repeat: no-repeat;
+}
+
+.metadata {
+    text-align: center;
+}
+
+.datloc {
+    display: flex;
+    align-content: space-between;
+}
+
+.panel #meetup-time {
+    height: 54px;
+}
+
+.panel #post-location {
+    background-image: url(images/location-icon.png);
+    background-size: 30px 30px;
+    background-position: 11px 8px;
+    background-repeat: no-repeat;
+}
+
+#file {
+    background-image: url(images/photo-icon.png);
+    background-size: 30px 30px;
+    background-position: 11px 8px;
+    background-repeat: no-repeat;
+}
+
+.panel textarea {
+    width: 100%;
+    height: 150px;
+    line-height: 150%;
+    resize: vertical;
+}
+
+#post-tags {
+    background-image: url(images/tag-icon.png);
+    background-size: 30px 30px;
+    background-position: 11px 8px;
+    background-repeat: no-repeat;
+}
+
+.panel input:hover,
+.panel textarea:hover,
+.panel input:focus,
+.panel textarea:focus {
+    background-color: #e6e6e6;
+}
+
+.button-yellow {
+    font-family: sans-serif;
+    float: left;
+    width: 100%;
+    border: #e6af2e solid 4px;
+    cursor: pointer;
+    background-color: #e6af2e;
+    color: white;
+    font-size: 24px;
+    padding-top: 22px;
+    padding-bottom: 22px;
+    transition: all 0.3s;
+    margin-top: -4px;
+    font-weight: 700;
+}
+
+.button-yellow:hover {
+    background-color: rgba(0, 0, 0, 0);
+    color: #e6af2e;
+}
+
+
+.ease {
+    width: 0px;
+    height: 74px;
+    background-color: #fbfbfb;
+    transition: .3s ease;
+}
+
+.submit:hover .ease {
+    width: 100%;
+    background-color: white;
+}
+
+.panel .post-input {
+    color: #3c3c3c;
+    font-family: sans-serif;
+    font-weight: 500;
+    font-size: 18px;
+    border-radius: 0;
+    line-height: 22px;
+    background-color: #fbfbfb;
+    padding: 13px 13px 13px 54px;
+    margin-bottom: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    border: 3px solid rgba(0, 0, 0, 0);
+}
+
+/*Inputs styles*/
+.panel .post-input:focus,
+#meetup-time:hover {
+    background: #fff;
+    border: 3px solid #e6af2e;
+    color: #e6af2e;
+    outline: none;
+    padding: 13px 13px 13px 54px;
+}
+
+#meetup-time:hover {
+    background-image: url(images/date-icon.png);
+    background-size: 30px 30px;
+    background-position: 11px 8px;
+    background-repeat: no-repeat;
+}
+
+
+#logout {
+    color: #e6af2e;
+    text-decoration: none;
+}
+
+#logout .logout-link {
+    color: #fff;
+    text-decoration: none;
+}
+
