@@ -4,11 +4,11 @@ function userToggle() {
   const panelusers = document.querySelectorAll('.paneluser');
   if (userlists) {
     userlists.addEventListener('click', (e) => {
-      if (e.target.tagName == 'LI') {
+      if (e.target.tagName === 'LI') {
         const targetUserPanel = document.querySelector(e.target.dataset.target);
 
         panelusers.forEach((paneluser) => {
-          if (paneluser == targetUserPanel) {
+          if (paneluser === targetUserPanel) {
             paneluser.classList.add('activerUserPanel');
           } else {
             paneluser.classList.remove('activerUserPanel');
@@ -26,12 +26,12 @@ function adminToggle() {
   const panels = document.querySelectorAll('.panel');
   if (lists) {
     lists.addEventListener('click', (e) => {
-      if (e.target.tagName == 'LI') {
+      if (e.target.tagName === 'LI') {
         const targetPanel = document.querySelector(e.target.dataset.target);
 
 
         panels.forEach((panel) => {
-          if (panel == targetPanel) {
+          if (panel === targetPanel) {
             panel.classList.add('active');
           } else {
             panel.classList.remove('active');
@@ -45,7 +45,7 @@ function adminToggle() {
 
 /* User registration */
 function registration() {
-  const regform = document.forms.regform;
+  const regform = document.querySelectorAll('regform');
   if (regform) {
     regform.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -91,6 +91,7 @@ function createMeetUp() {
       const dateTime = document.createElement('h3');
       const meetupPost = document.createElement('p');
       const tag = document.createElement('p');
+      const imgs = document.createElement('img');
 
       // add document
       hTitle.textContent = title;
@@ -98,6 +99,7 @@ function createMeetUp() {
       dateTime.textContent = time;
       meetupPost.textContent = post;
       tag.textContent = tags;
+      imgs.src = image;
     });
   }
 }
@@ -111,11 +113,11 @@ function question() {
     questform.addEventListener('submit', (e) => {
       e.preventDefault();
 
-      const question = questform.querySelector('input[type="textare"]').value;
+      const questionn = questform.querySelector('input[type="textare"]').value;
 
       const quest = document.createElement('p');
 
-      quest.textContent = question;
+      quest.textContent = questionn;
 
       document.querySelector('.questiondiv').appendChild(quest);
     });
@@ -123,8 +125,7 @@ function question() {
 }
 
 userToggle();
-// question();
-// validate();
-// createMeetUp();
-// registration();
+question();
+createMeetUp();
+registration();
 adminToggle();
