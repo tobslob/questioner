@@ -1,4 +1,4 @@
-const meetupDb = {
+const meetupdb = {
 
   user: [{
     id: 1001,
@@ -13,9 +13,9 @@ const meetupDb = {
     isAdmin: false,
   }],
 
-  meetupPost: [{
+  meetuppost: [{
     id: 1,
-    createdOn: 'Dec 31 2018',
+    createdOn: ' ',
     location: 'Awolowo Ikeja',
     images: ['', ''], // OPTIONAL: URL to the image location
     topic: 'The best programming lang to learn in 2019',
@@ -24,7 +24,7 @@ const meetupDb = {
     Tags: ['programming', 'code', 'JavaScript', 'python', 'Java'],
   }, {
     id: 2,
-    createdOn: 'Jan 04 2019',
+    createdon: ' ',
     location: 'Ikeja',
     images: ['', ''], // OPTIONAL: URL to the image location
     topic: 'The best programming lang to learn in 2020',
@@ -51,4 +51,4 @@ const meetupDb = {
   }],
 };
 
-module.exports = meetupDb;
+module.exports = meetupdb;
