@@ -17,7 +17,12 @@
     "nodemon": "^1.18.9"
   },
   "scripts": {
-    "test": "mocha"
+    "lint": "eslint",
+    "eslint": "eslint . --fix",
+    "pretest": "eslint --ignore-path .gitignore .",
+    "test": "mocha",
+    "parser": "babel-eslint",
+    "start": "node_modules/.bin/nodemon server.js --exec babel-node --"
   },
   "repository": {
     "type": "git",
