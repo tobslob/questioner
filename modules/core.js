@@ -1,41 +1,41 @@
-const bodyParser = require('body-parser');
 const express = require('express');
-const meetupdb = require('./db/db');
+const path = require('path');
 
 const app = express();
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
 
-module.exports = app;
+app.use(express.static(path.join(__dirname, '../UI')));
 
-// get a specific meetup post
-let result;
-app.post('/api/v1/meetup-post', (req, res) => {
-  for (let i = 0; i < meetupdb.meetuppost.length; i = +1) {
-    if (!meetupdb.meetuppost[i].title) {
-      return res.status(400).send({
-        status: '400',
-        message: 'Please input the title for the particular meetup...',
-      });
-    } if (meetupdb.meetuppost[i].title) {
-      app.get('/api/v1/meetup-post', (request, response) => {
-        response.status(200).send({
-          status: 200,
-          message: 'meetup retrieved successfully',
-        });
-      });
-    }
-  }
-  return result;
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../UI', 'index.html'));
 });
 
-// get all meetup record
-app.get('/api/v1/all-meetup', (req, res) => {
-  const allMeetup = meetupdb.meetuppost;
-  res.status(200).send({
-    status: 200,
-    message: 'meetup database retrieved successfully',
-    allMeetup,
-  });
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, '../UI', 'sign-in.html'));
 });
+
+app.get('/signup', (req, res) => {
+  res.sendFile(path.join(__dirname, '../UI', 'sign-up.html'));
+});
+
+app.get('/meetup-post', (req, res) => {
+  res.sendFile(path.join(__dirname, '../UI', 'meetup-post.html'));
+});
+
+app.get('/meetuppostpage', (req, res) => {
+  res.sendFile(path.join(__dirname, '../UI', 'meetuppostpage.html'));
+});
+
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, '../UI', 'admin.html'));
+});
+
+app.get('/userprofile', (req, res) => {
+  res.sendFile(path.join(__dirname, '../UI', 'userprofile.html'));
+});
+
+app.get('/password-reset', (req, res) => {
+  res.sendFile(path.join(__dirname, '../UI', 'password-reset.html'));
+});
+
+app.listen(3000);
