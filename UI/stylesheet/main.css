@@ -499,7 +499,7 @@ nav ul li a:hover {
 
 .meetupheading {
     background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
-    background-image: url(images/background.png);
+    background-image: url(/images/background.png);
     background-attachment: fixed;
     background-position: center;
     background-size: cover;
@@ -694,7 +694,7 @@ footer {
 #banner-log {
     min-height: 120vh;
     background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
-    background-image: url(images/background.png);
+    background-image: url(/images/background.png);
     background-attachment: fixed;
     background-position: center;
     background-size: cover;
@@ -995,7 +995,7 @@ nav li {
 
 .content {
     flex: 5;
-    background-image: url(images/background.jpg);
+    background-image: url();
     height: 530px;
     background-color: #eBe2db;
     font-size: 20px;
@@ -1042,21 +1042,21 @@ nav li {
 
 
 .panel #post-title {
-    background-image: url(images/title-icon.png);
+    background-image: url(/images/title-icon.png);
     background-size: 30px 30px;
     background-position: 11px 8px;
     background-repeat: no-repeat;
 }
 
 .panel #post-title:focus {
-    background-image: url(images/title-icon.png);
+    background-image: url(/images/title-icon.png);
     background-size: 30px 30px;
     background-position: 11px 8px;
     background-repeat: no-repeat;
 }
 
 .panel #desc {
-    background-image: url(images/desc-icon.png);
+    background-image: url(/images/desc-icon.png);
     background-size: 30px 30px;
     background-position: 11px 8px;
     background-repeat: no-repeat;
@@ -1076,14 +1076,14 @@ nav li {
 }
 
 .panel #post-location {
-    background-image: url(images/location-icon.png);
+    background-image: url(/images/location-icon.png);
     background-size: 30px 30px;
     background-position: 11px 8px;
     background-repeat: no-repeat;
 }
 
 #file {
-    background-image: url(images/photo-icon.png);
+    background-image: url(/images/photo-icon.png);
     background-size: 30px 30px;
     background-position: 11px 8px;
     background-repeat: no-repeat;
@@ -1097,7 +1097,7 @@ nav li {
 }
 
 #post-tags {
-    background-image: url(images/tag-icon.png);
+    background-image: url(/images/tag-icon.png);
     background-size: 30px 30px;
     background-position: 11px 8px;
     background-repeat: no-repeat;
@@ -1170,7 +1170,7 @@ nav li {
 }
 
 #meetup-time:hover {
-    background-image: url(images/date-icon.png);
+    background-image: url(/images/date-icon.png);
     background-size: 30px 30px;
     background-position: 11px 8px;
     background-repeat: no-repeat;
