@@ -2,7 +2,7 @@
 
 const bodyParser = require('body-parser');
 const express = require('express');
-const meetupdb = require('./db/db');
+const meetupdb = require('./modules/db/db');
 
 const app = express();
 
