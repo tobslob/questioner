@@ -1,41 +1,42 @@
-const express = require('express');
-const path = require('path');
+import express from 'express';
+import path from 'path';
 
-const app = express();
+const core = express();
 
 
-app.use(express.static(path.join(__dirname, '../UI')));
+core.use(express.static(path.join(__dirname, '../UI')));
 
-app.get('/', (req, res) => {
+core.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../UI', 'index.html'));
 });
 
-app.get('/login', (req, res) => {
+core.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, '../UI', 'sign-in.html'));
 });
 
-app.get('/signup', (req, res) => {
+core.get('/signup', (req, res) => {
   res.sendFile(path.join(__dirname, '../UI', 'sign-up.html'));
 });
 
-app.get('/meetup-post', (req, res) => {
+core.get('/meetup-post', (req, res) => {
   res.sendFile(path.join(__dirname, '../UI', 'meetup-post.html'));
 });
 
-app.get('/meetuppostpage', (req, res) => {
+core.get('/meetuppostpage', (req, res) => {
   res.sendFile(path.join(__dirname, '../UI', 'meetuppostpage.html'));
 });
 
-app.get('/admin', (req, res) => {
+core.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, '../UI', 'admin.html'));
 });
 
-app.get('/userprofile', (req, res) => {
+core.get('/userprofile', (req, res) => {
   res.sendFile(path.join(__dirname, '../UI', 'userprofile.html'));
 });
 
-app.get('/password-reset', (req, res) => {
+core.get('/password-reset', (req, res) => {
   res.sendFile(path.join(__dirname, '../UI', 'password-reset.html'));
 });
 
-app.listen(3000);
+
+module.exports = core;
