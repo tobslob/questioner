@@ -1,24 +1,12 @@
-/* app.js */
+import core from './modules/core';
 
-const bodyParser = require('body-parser');
 const express = require('express');
-const meetupdb = require('./modules/db/db');
 
 const app = express();
+const morgan = require('morgan');
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(morgan('combined'));
 
-
-// get a specific meetup record
-app.get('/api/v1/meetup-record', (req, res) => {
-  const specificMeetup = meetupdb.meetupPost[1];
-
-  res.status(200).send({
-    status: 200,
-    message: 'meetup database retrieved successfully',
-    specificMeetup,
-  });
-});
+app.use(core);
 
 module.exports = app;

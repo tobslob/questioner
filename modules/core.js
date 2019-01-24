@@ -1,41 +1,42 @@
-const bodyParser = require('body-parser');
-const express = require('express');
-const meetupdb = require('./db/db');
+import express from 'express';
+import path from 'path';
 
-const app = express();
+const core = express();
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
 
-module.exports = app;
+core.use(express.static(path.join(__dirname, '../UI')));
 
-// get a specific meetup post
-let result;
-app.post('/api/v1/meetup-post', (req, res) => {
-  for (let i = 0; i < meetupdb.meetuppost.length; i = +1) {
-    if (!meetupdb.meetuppost[i].title) {
-      return res.status(400).send({
-        status: '400',
-        message: 'Please input the title for the particular meetup...',
-      });
-    } if (meetupdb.meetuppost[i].title) {
-      app.get('/api/v1/meetup-post', (request, response) => {
-        response.status(200).send({
-          status: 200,
-          message: 'meetup retrieved successfully',
-        });
-      });
-    }
-  }
-  return result;
+core.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../UI', 'index.html'));
 });
 
-// get all meetup record
-app.get('/api/v1/all-meetup', (req, res) => {
-  const allMeetup = meetupdb.meetuppost;
-  res.status(200).send({
-    status: 200,
-    message: 'meetup database retrieved successfully',
-    allMeetup,
-  });
+core.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, '../UI', 'sign-in.html'));
 });
+
+core.get('/signup', (req, res) => {
+  res.sendFile(path.join(__dirname, '../UI', 'sign-up.html'));
+});
+
+core.get('/meetup-post', (req, res) => {
+  res.sendFile(path.join(__dirname, '../UI', 'meetup-post.html'));
+});
+
+core.get('/meetuppostpage', (req, res) => {
+  res.sendFile(path.join(__dirname, '../UI', 'meetuppostpage.html'));
+});
+
+core.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, '../UI', 'admin.html'));
+});
+
+core.get('/userprofile', (req, res) => {
+  res.sendFile(path.join(__dirname, '../UI', 'userprofile.html'));
+});
+
+core.get('/password-reset', (req, res) => {
+  res.sendFile(path.join(__dirname, '../UI', 'password-reset.html'));
+});
+
+
+module.exports = core;

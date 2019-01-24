@@ -1,9 +1,9 @@
-const http = require('http');
-const app = require('./app');
+import http from 'http';
+import app from './app';
 
-const port = 3000;
 const server = http.createServer(app);
-server.listen(port, () => {
+
+server.listen(3000, () => {
   /* eslint-disable no-console */
   console.log('server started...');
 });
