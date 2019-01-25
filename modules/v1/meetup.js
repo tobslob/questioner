@@ -13,7 +13,7 @@ meetup.use(bodyparser.json());
 
 
 /*
- *
+ *api to create meetup
 */
 meetup.post('/v1/create-meetup', (req, res) => {
   const schema = Joi.object().keys({
@@ -36,6 +36,19 @@ meetup.post('/v1/create-meetup', (req, res) => {
     },
   );
   meetupdb.meetuppost.push(data);
+});
+
+
+/*
+*api to get all meetup post
+*/
+meetup.get('/v1/get-all-meetup', (req, res) => {
+  const result = meetupdb.meetuppost;
+  if (result) {
+    res.status(200).send(result);
+  } else {
+    res.status(400).send('an error occur!');
+  }
 });
 
 module.exports = meetup;
