@@ -15,7 +15,7 @@ const meetupdb = {
 
   meetuppost: [{
     id: 1,
-    createdOn: ' ',
+    createdOn: new Date(),
     location: 'Awolowo Ikeja',
     images: ['', ''], // OPTIONAL: URL to the image location
     topic: 'The best programming lang to learn in 2019',
@@ -24,18 +24,18 @@ const meetupdb = {
     Tags: ['programming', 'code', 'JavaScript', 'python', 'Java'],
   }, {
     id: 2,
-    createdon: ' ',
+    createdon: new Date(),
     location: 'Ikeja',
     images: ['', ''], // OPTIONAL: URL to the image location
     topic: 'The best programming lang to learn in 2020',
     body: 'This is description on the best programming lang to learn in 2019',
     happeningOn: 'Jan 21 2019', // when the meetup is holding
-    Tags: ['programming', 'code', 'python', 'Java'],
+    Tags: ['programming', 'code', 'python', 'java'],
   }],
 
   questions: [{
     id: 1,
-    createdOn: 'Jan 31 2018',
+    createdOn: new Date(),
     createdBy: 1002, // represents the user asking the question
     meetup: 1, // represents the meetup the question is for
     title: 'learn many but be very proficient in 1',
