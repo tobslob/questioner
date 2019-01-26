@@ -91,4 +91,21 @@ meetup.put('/v1/edit-meetup-post/:id', (req, res) => {
 });
 
 
+/*
+ *restful api to delete meetup
+ */
+meetup.delete('/v1/delete-meetup/:id', (req, res) => {
+  const deleteId = req.params.id;
+  const specMeetup = meetupdb.meetuppost;
+
+  // eslint-disable-next-line eqeqeq
+  const specmeetup = specMeetup.filter(specific => specific.id == deleteId);
+
+  const index = specMeetup.indexOf(specmeetup);
+  specMeetup.splice(index, 1);
+
+  res.status(200).send(`meetup with an id: ${deleteId} has been deleted`);
+});
+
+
 module.exports = meetup;
