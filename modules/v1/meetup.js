@@ -51,4 +51,21 @@ meetup.get('/v1/get-all-meetup', (req, res) => {
   }
 });
 
+
+/*
+ * api to get specific meetup
+ */
+meetup.get('/v1/get-specific-meetup/:id', (req, res) => {
+  const requestelement = req.params.id;
+  const specMeetup = meetupdb.meetuppost;
+
+  // eslint-disable-next-line eqeqeq
+  const specmeetup = specMeetup.filter(specific => specific.id == requestelement);
+  if (!specmeetup) {
+    res.status(404).send('no meetup id match');
+  }
+  res.status(200).send(specmeetup);
+});
+
+
 module.exports = meetup;
