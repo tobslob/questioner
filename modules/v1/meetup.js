@@ -17,7 +17,7 @@ meetup.use(bodyparser.json());
 */
 meetup.post('/v1/create-meetup', (req, res) => {
   const schema = Joi.object().keys({
-    id: meetupdb.meetuppost.length + 1,
+    id: Joi.number().required(),
     createdOn: Joi.date().required(),
     location: Joi.string().trim().required(),
     images: ImgJoi.image().allowTypes(['png', 'bmp']),
@@ -30,7 +30,7 @@ meetup.post('/v1/create-meetup', (req, res) => {
   const data = Joi.validate(
     req.body, schema, (err, result) => {
       if (err) {
-        return res.status(400).send(err);
+        return res.status(404).send(err);
       }
       return res.status(200).send(result);
     },
@@ -45,7 +45,7 @@ meetup.post('/v1/create-meetup', (req, res) => {
 meetup.get('/v1/get-all-meetup', (req, res) => {
   const result = meetupdb.meetuppost;
   if (result) {
-    res.status(200).send(result);
+    res.status(200).json(result);
   } else {
     res.status(400).send('an error occur!');
   }
