@@ -68,4 +68,27 @@ meetup.get('/v1/get-specific-meetup/:id', (req, res) => {
 });
 
 
+/*
+ * An API endpoint to edit meetup post
+ */
+meetup.put('/v1/edit-meetup-post/:id', (req, res) => {
+  const editId = req.params.id;
+  const specMeetup = meetupdb.meetuppost;
+
+  // eslint-disable-next-line eqeqeq
+  const specmeetup = specMeetup.filter(specific => specific.id == editId)[0];
+
+  const index = specMeetup.indexOf(specmeetup);
+  const keys = Object.keys(req.body);
+
+  keys.forEach((key) => {
+    specmeetup[key] = req.body[key];
+  });
+
+  specMeetup[index] = specmeetup;
+
+  res.status(200).send(specMeetup[index]);
+});
+
+
 module.exports = meetup;
