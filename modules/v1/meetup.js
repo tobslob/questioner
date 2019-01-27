@@ -16,8 +16,9 @@ meetup.use(bodyparser.json());
  *api to create meetup
 */
 meetup.post('/v1/create-meetup', (req, res) => {
+  const data = req.body;
+  const meetUp = meetupdb.meetuppost;
   const schema = Joi.object().keys({
-    id: Joi.number().required(),
     createdOn: Joi.date().required(),
     location: Joi.string().trim().required(),
     images: ImgJoi.image().allowTypes(['png', 'bmp']),
@@ -27,22 +28,24 @@ meetup.post('/v1/create-meetup', (req, res) => {
     Tags: Joi.array().items(Joi.string().trim()).required(),
   });
 
-  const data = Joi.validate(
-    req.body, schema, (err, result) => {
+  Joi.validate(
+
+    data, schema, (err, result) => {
+      const id = meetupdb.meetuppost.length + 1;
+
       if (err) {
-        return res.status(404).send(err);
+        res.status(400).send(result);
       }
-      return res.status(200).send(result);
+      res.status(200).send(Object.assign({ id }), meetUp.push(result));
     },
   );
-  meetupdb.meetuppost.push(data);
 });
 
 
 /*
 *api to get all meetup post
 */
-meetup.get('/v1/get-all-meetup', (req, res) => {
+meetup.get('/v1/get-all-meetup', (_req, res) => {
   const result = meetupdb.meetuppost;
   if (result) {
     res.status(200).json(result);
