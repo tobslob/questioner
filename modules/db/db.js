@@ -30,7 +30,7 @@ const meetupdb = {
     topic: 'The best programming lang to learn in 2020',
     body: 'This is description on the best programming lang to learn in 2019',
     happeningOn: 'Jan 21 2019', // when the meetup is holding
-    Tags: ['programming', 'code', 'python', 'java'],
+    // Tags: ['programming', 'code', 'python', 'java'],
   }],
 
   questions: [{
