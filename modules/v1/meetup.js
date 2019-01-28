@@ -17,26 +17,35 @@ meetup.use(bodyparser.json());
 */
 meetup.post('/v1/create-meetup', (req, res) => {
   const data = req.body;
-  const meetUp = meetupdb.meetuppost;
   const schema = Joi.object().keys({
-    createdOn: Joi.date().required(),
     location: Joi.string().trim().required(),
     images: ImgJoi.image().allowTypes(['png', 'bmp']),
     topic: Joi.string().trim().required(),
     body: Joi.string().trim().required(),
     happeningOn: Joi.date().required(),
-    Tags: Joi.array().items(Joi.string().trim()).required(),
+    // Tags: Joi.array().items(Joi.string().trim()).required(),
   });
 
   Joi.validate(
 
     data, schema, (err, result) => {
+      const meetUp = meetupdb.meetuppost;
       const id = meetupdb.meetuppost.length + 1;
+      const createdOn = Date();
 
       if (err) {
-        res.status(400).send(result);
+        res.json({
+          status: 422,
+          message: 'Invalid data, please try-again',
+          data: Object.assign({ id, createdOn }, result),
+        });
       }
-      res.status(200).send(Object.assign({ id }), meetUp.push(result));
+      res.json({
+        status: 200,
+        message: 'meetup successful created',
+        data: Object.assign({ id, createdOn }, result),
+      });
+      meetUp.push(data);
     },
   );
 });
