@@ -40,7 +40,7 @@ const meetupdb = {
     meetup: 1, // represents the meetup the question is for
     title: 'learn many but be very proficient in 1',
     body: 'I will love to learn more than 3, but be proficient in 2',
-    votes: 'thumb up',
+    votes: 0,
   }],
 
   rsvp: [{
