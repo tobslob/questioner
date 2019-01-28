@@ -26,14 +26,14 @@ question.post('/v1/create-question', (req, res) => {
     const votes = 0;
     if (err) {
       res.status(422).json({
-        status: 'error',
-        message: 'Invalid request data',
+        status: 422,
+        message: 'Invalid data, please try-again',
         data,
       });
     }
     res.json({
-      status: 'success',
-      message: 'User created successfully',
+      status: 200,
+      message: 'Question created successfully',
       data: Object.assign({
         id, createdOn, createdBy, votes,
       },
