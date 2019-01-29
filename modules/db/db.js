@@ -41,6 +41,14 @@ const meetupdb = {
     title: 'learn many but be very proficient in 1',
     body: 'I will love to learn more than 3, but be proficient in 2',
     votes: 0,
+  }, {
+    id: 2,
+    createdOn: '2020-01-25T11:34:58.517Z',
+    createdBy: 1002, // represents the user asking the question
+    meetup: 2, // represents the meetup the question is for
+    title: 'new question',
+    body: 'I will love to learn more than 3, but be proficient in 2',
+    votes: 3,
   }],
 
   rsvp: [{
