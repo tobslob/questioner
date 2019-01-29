@@ -1,7 +1,7 @@
 const meetupdb = {
 
   user: [{
-    id: 1001,
+    id: 1,
     firstname: 'Kazeem',
     lastname: 'Odutola',
     othername: 'Oluwatobi',
@@ -55,7 +55,7 @@ const meetupdb = {
     id: 11001,
     topic: '',
     user: 1002, // represents the user
-    status: 'maybe', // [yes, no, or maybe]
+    response: 'maybe', // [yes, no, or maybe]
   }],
 };
 
