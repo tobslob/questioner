@@ -52,15 +52,14 @@ question.get('/v1/upvote-question/:id', (req, res) => {
   const getQuestion = meetupdb.questions;
 
   // eslint-disable-next-line eqeqeq
-  const specQuestion = getQuestion.filter(specific => specific.id == requestId);
-  const upVote = () => {
-    // eslint-disable-next-line no-plusplus
-    specQuestion.votes++;
-  };
+  const specQuestion = getQuestion.filter(specific => specific.id == requestId)[0];
+
+  // eslint-disable-next-line no-plusplus
+  const upVote = () => specQuestion.votes++;
+  upVote();
   res.json({
     status: 200,
     message: 'success',
-    upVote,
   });
 });
 
@@ -73,15 +72,14 @@ question.get('/v1/downvote-question/:id', (req, res) => {
   const getQuestion = meetupdb.questions;
 
   // eslint-disable-next-line eqeqeq
-  const specQuestion = getQuestion.filter(specific => specific.id == requestId);
-  const downVote = () => {
-    // eslint-disable-next-line no-plusplus
-    specQuestion.votes--;
-  };
+  const specQuestion = getQuestion.filter(specific => specific.id == requestId)[0];
+
+  // eslint-disable-next-line no-plusplus
+  const downVote = () => specQuestion.votes--;
+  downVote();
   res.json({
     status: 200,
     message: 'success',
-    downVote,
   });
 });
 
