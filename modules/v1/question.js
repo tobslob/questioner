@@ -43,4 +43,47 @@ question.post('/v1/create-question', (req, res) => {
   });
 });
 
+
+/**
+ * upvote question api
+ */
+question.get('/v1/upvote-question/:id', (req, res) => {
+  const requestId = req.params.id;
+  const getQuestion = meetupdb.questions;
+
+  // eslint-disable-next-line eqeqeq
+  const specQuestion = getQuestion.filter(specific => specific.id == requestId);
+  const upVote = () => {
+    // eslint-disable-next-line no-plusplus
+    specQuestion.votes++;
+  };
+  res.json({
+    status: 200,
+    message: 'success',
+    upVote,
+  });
+});
+
+
+/**
+ * downvote question api
+ */
+question.get('/v1/downvote-question/:id', (req, res) => {
+  const requestId = req.params.id;
+  const getQuestion = meetupdb.questions;
+
+  // eslint-disable-next-line eqeqeq
+  const specQuestion = getQuestion.filter(specific => specific.id == requestId);
+  const downVote = () => {
+    // eslint-disable-next-line no-plusplus
+    specQuestion.votes--;
+  };
+  res.json({
+    status: 200,
+    message: 'success',
+    downVote,
+  });
+});
+
+
 module.exports = question;
