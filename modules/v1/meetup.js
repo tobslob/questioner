@@ -98,7 +98,7 @@ meetup.put('/v1/edit-meetup-post/:id', (req, res) => {
 
   specMeetup[index] = specmeetup;
 
-  res.status(200).send(specMeetup[index]);
+  res.status(202).send(specMeetup[index]);
 });
 
 
