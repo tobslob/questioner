@@ -23,7 +23,7 @@ meetup.post('/v1/create-meetup', (req, res) => {
     topic: Joi.string().trim().required(),
     body: Joi.string().trim().required(),
     happeningOn: Joi.date().required(),
-    // Tags: Joi.array().items(Joi.string().trim()).required(),
+    Tags: Joi.array().items(Joi.string().trim()),
   });
 
   Joi.validate(
