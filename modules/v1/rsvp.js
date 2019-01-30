@@ -37,7 +37,9 @@ rsvp.post('/v1/rsvp-meetup/:id', (req, res) => {
     res.json({
       status: 200,
       message: `your response has been saved for ${Topic} meetup\n Date: ${date}`,
-      data: Object.assign({ id, meetup, user }, result),
+      data: Object.assign({
+        id, user, meetup, Topic,
+      }, result),
     });
   });
 });
