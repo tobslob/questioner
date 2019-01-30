@@ -41,7 +41,7 @@ meetup.post('/v1/create-meetup', (req, res) => {
         });
       }
       res.json({
-        status: 200,
+        status: 201,
         message: 'meetup successful created',
         data: Object.assign({ id, createdOn }, result),
       });
@@ -54,13 +54,12 @@ meetup.post('/v1/create-meetup', (req, res) => {
 /*
 *api to get all meetup post
 */
-meetup.get('/v1/get-all-meetup', (_req, res) => {
+meetup.get('/v1/get-all-meetup', (req, res) => {
   const result = meetupdb.meetuppost;
-  if (result) {
-    res.status(200).json(result);
-  } else {
-    res.status(400).send('an error occur!');
+  if (!result) {
+    res.status(422).send('an error occur!');
   }
+  res.status(200).json(result);
 });
 
 
