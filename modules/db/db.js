@@ -52,9 +52,10 @@ const meetupdb = {
   }],
 
   rsvp: [{
-    id: 11001,
-    topic: '',
-    user: 1002, // represents the user
+    id: 1,
+    meetup: 1, // primary key
+    topic: 'The best programming lang to learn in 2019',
+    user: 1, // represents the user
     response: 'maybe', // [yes, no, or maybe]
   }],
 };

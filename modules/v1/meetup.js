@@ -72,7 +72,7 @@ meetup.get('/v1/get-specific-meetup/:id', (req, res) => {
   const specMeetup = meetupdb.meetuppost;
 
   // eslint-disable-next-line eqeqeq
-  const specmeetup = specMeetup.filter(specific => specific.id == requestelement);
+  const specmeetup = specMeetup.filter(specific => specific.id == requestelement)[0];
   if (!specmeetup) {
     res.status(404).send('no meetup id match');
   }
