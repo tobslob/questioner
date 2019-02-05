@@ -30,7 +30,16 @@ const meetupdb = {
     topic: 'The best programming lang to learn in 2020',
     body: 'This is description on the best programming lang to learn in 2019',
     happeningOn: 'Jan 21 2019', // when the meetup is holding
-    // Tags: ['programming', 'code', 'python', 'java'],
+    Tags: ['programming', 'code', 'python', 'java'],
+  }, {
+    id: 3,
+    createdon: '2020-01-25T11:34:58.517Z',
+    location: 'Ikeja-Lagos',
+    images: ['', ''], // OPTIONAL: URL to the image location
+    topic: 'The best programming lang to learn in 2020',
+    body: 'This is description on the best programming lang to learn in 2019',
+    happeningOn: 'Jan 25 2019', // when the meetup is holding
+    Tags: ['programming', 'code', 'python', 'java'],
   }],
 
   questions: [{

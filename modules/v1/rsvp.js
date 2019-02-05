@@ -13,8 +13,9 @@ rsvp.use(bodyparser.json());
  *  Rsvp endpoint
  */
 rsvp.post('/v1/rsvp-meetup/:id', (req, res) => {
-  const requestId = req.params.id;
-  const data = req.body;
+  // eslint-disable-next-line radix
+  const requestId = parseInt(req.params.id);
+
   const Rsvp = meetupdb.rsvp;
   const meetUp = meetupdb.meetuppost;
   const User = meetupdb.user[0];
@@ -22,26 +23,28 @@ rsvp.post('/v1/rsvp-meetup/:id', (req, res) => {
     response: Joi.string().trim().insensitive().valid('yes', 'no', 'maybe')
       .required(),
   });
-  Joi.validate(data, schema, (err, result) => {
-    const id = Rsvp.length + 1;
-    // eslint-disable-next-line eqeqeq
-    const rsvpmeetup = meetUp.filter(specific => specific.id == requestId)[0];
-    const meetup = rsvpmeetup.id;
-    const Topic = rsvpmeetup.topic;
-    const date = rsvpmeetup.happeningOn;
-    const user = User.id;
+  const result = Joi.validate(req.body, schema);
 
-    if (err) {
-      res.json({ status: 422, message: 'You can either enter "maybe", "no" and "yes"' });
-    }
-    res.json({
-      status: 200,
-      message: `your response has been saved for ${Topic} meetup\n Date: ${date}`,
-      data: Object.assign({
-        id, user, meetup, Topic,
-      }, result),
-    });
-  });
+  const rsvpmeetup = meetUp.find(specific => specific.id === requestId);
+
+  const id = Rsvp.length + 1;
+  const meetup = rsvpmeetup.id;
+  const Topic = rsvpmeetup.topic;
+  const date = rsvpmeetup.happeningOn;
+  const user = User.id;
+
+  if (result.error) return res.json({ status: 422, message: 'You can either enter "maybe", "no" and "yes"' });
+
+  const RSVP = {
+    id,
+    meetup,
+    Topic,
+    date,
+    user,
+    response: req.body.response,
+  };
+  return res.status(200).send(RSVP);
 });
+
 
 module.exports = rsvp;
