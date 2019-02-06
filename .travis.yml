@@ -7,7 +7,7 @@ node_js:
   - 7
   - 6
 install:
-  - npm install
+  - travis_wait 60 mvn install
 script:
   - npm test
 branches:
