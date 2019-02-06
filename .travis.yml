@@ -1,12 +1,12 @@
 language: node_js
+sudo: false
 node_js:
- - "stable"
- - "node"
+  - 10
+  - 9
+  - 8
+  - 7
+  - 6
+install:
+  - cd istanbul-mocha && npm install && cd ..
 script:
-  - npm test
-cache: npm
-branches:
-  only:
-    - master
-after_script:
-- ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+  - cd istanbul-mocha && npm test
