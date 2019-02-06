@@ -2,3 +2,11 @@ language: node_js
 node_js:
  - "stable"
  - "node"
+script:
+  - npm test
+cache: npm
+branches:
+  only:
+    - master
+after_script:
+- ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
