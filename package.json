@@ -44,7 +44,7 @@
     "eslint": "eslint . --fix",
     "babel-preset-es2015": "^6.3.13",
     "pretest": "eslint --ignore-path .gitignore .",
-    "test": "mocha --require @babel/register -- modules/test",
+    "test": "mocha --require @babel/register -- modules/test --exit",
     "parser": "babel-eslint",
     "start": "nodemon app.js --exec babel-node",
     "build": "babel src —-out-dir dist",
