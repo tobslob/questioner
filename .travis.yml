@@ -2,3 +2,9 @@ language: node_js
 node_js:
  - "stable"
  - "node"
+script:
+  - npm test
+cache: npm
+branches:
+  only:
+    - master
