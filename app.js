@@ -19,8 +19,8 @@ const server = http.createServer(app);
 const port = process.env.PORT || 3000;
 
 server.listen(port, () => {
-  /* eslint-disable no-console */
-  console.log(`listening to server on port ${port}...`);
+    /* eslint-disable no-console */
+    console.log(`listening to server on port ${port}...`);
 });
 
 module.exports = app;
