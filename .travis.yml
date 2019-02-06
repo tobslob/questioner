@@ -6,8 +6,6 @@ node_js:
   - 8
   - 7
   - 6
-install:
-  - travis_wait 60 mvn install
 script:
   - npm test
 branches:
