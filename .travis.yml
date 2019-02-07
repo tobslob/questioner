@@ -5,20 +5,10 @@ node_js:
   - 8
 matrix:
   include:
-  - env: TEST_NODE_VERSION=8
-  - env: TEST_NODE_VERSION=node
-before_install:
-# Install the Node version to test against
-- nvm install $TEST_NODE_VERSION
-# Switch back to build-time Node version
-- nvm use $TRAVIS_NODE_VERSION
-before_script:
-- nvm use $TEST_NODE_VERSION
-- node --version
-- rm -rf ./node_modules package-lock.json
-- npm install
+  - "stable"
+  - "node"
 script:
-  - npm test
+  - npm test --exit
 branches:
   only:
   - master

@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyparser from 'body-parser';
 import Joi from 'joi';
-import meetupdb from '../db/meetupdb';
+import meetupdb from '../db/db';
 
 const question = express();
 
