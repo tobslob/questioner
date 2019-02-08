@@ -13,7 +13,7 @@ import EventEmitter from 'events';
 gulp.task('travis', function() {
     const e = new EventEmitter();
     e.on('travis', () => {
-        gulp.src(['modules/test/*'])
+        gulp.src(['build','modules/test/*'])
             .pipe(gulp.dest('dist'));
     });
     setTimeout(() => { e.emit('travis', 'Gulp is running...'); e.emit('finish'); });
