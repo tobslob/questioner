@@ -4,7 +4,7 @@ node_js:
   - 'node'
   - 'stable'
   - 8
-install: travis_wait mvn -x install
+install: travis_wait -x mvn install
 script:
   - npm test
 branches:
