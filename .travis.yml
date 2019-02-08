@@ -1,9 +1,10 @@
 language: node_js
-sudo: false
 node_js:
-  - 'node'
   - 'stable'
-  - 8
+env:
+  - NODE_ENV="development"
+  - NODE_ENV="production";SESSION_SECRET="la li"
+  script: gulp travis
 branches:
   only:
   - master
