@@ -2,9 +2,9 @@ language: node_js
 node_js:
   - 'stable'
   - 'node'
-before_script:
-  - npm install -g gulp-cli
-script: gulp travis
 branches:
   only:
   - master
+before_script:
+  - npm install -g gulp-cli
+script: gulp travis
