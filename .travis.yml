@@ -8,3 +8,4 @@ script: gulp travis
 branches:
   only:
   - master
+  - stable
