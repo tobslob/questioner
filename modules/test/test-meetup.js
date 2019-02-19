@@ -3,8 +3,8 @@ import chaiHttp from 'chai-http';
 import app from '../../app';
 import meetup from '../db/meetupdb';
 
-// eslint-disable-next-line prefer-destructuring
-const expect = chai.expect;
+const { expect } = chai;
+
 chai.use(chaiHttp);
 
 /**
@@ -28,7 +28,7 @@ describe('/POST meetup', () => {
     };
     it('should return 422 error', (done) => {
         chai.request(app)
-            .post('/v1/create-meetup')
+            .post('/v1/meetup')
             .send(data)
             .end((err, res) => {
                 expect(res.status).to.equal(422);
@@ -37,7 +37,7 @@ describe('/POST meetup', () => {
     });
     it('should post an object', (done) => {
         chai.request(app)
-            .get('/v1/create-meetup')
+            .post('/v1/meetup')
             .end((err, res) => {
                 if (err) throw err;
                 expect(res).to.be.an('object');
@@ -53,7 +53,7 @@ describe('/POST meetup', () => {
 describe('/GET all meetup', () => {
     it('should retrieve all meetup', (done) => {
         chai.request(app)
-            .get('/v1/get-all-meetup')
+            .get('/v1/meetup')
             .end((err, res) => {
                 if (err) throw err;
                 expect(res).to.be.an('object');
@@ -62,7 +62,7 @@ describe('/GET all meetup', () => {
     });
     it('should return status code of 200', (done) => {
         chai.request(app)
-            .get('/v1/get-all-meetup')
+            .get('/v1/meetup')
             .end((err, res) => {
                 expect(res.status).to.be.equal(200);
                 done();
@@ -77,7 +77,7 @@ describe('/GET all meetup', () => {
 describe('/GET specific meetup', () => {
     it('should retrieve specific meetup', (done) => {
         chai.request(app)
-            .get('/v1/get-specific-meetup/1')
+            .get('/v1/meetup/1')
             .end((err, res) => {
                 if (err) throw err;
                 expect(res).to.be.an('object');
@@ -86,7 +86,7 @@ describe('/GET specific meetup', () => {
     });
     it('should return status code of 200', (done) => {
         chai.request(app)
-            .get('/v1/get-specific-meetup/1')
+            .get('/v1/meetup/1')
             .end((err, res) => {
                 expect(res.status).to.be.equal(200);
                 done();
@@ -101,7 +101,7 @@ describe('/GET specific meetup', () => {
 describe('/EDIT specific meetup', () => {
     it('should edit specific meetup', (done) => {
         chai.request(app)
-            .get('/v1/edit-meetup-post/1')
+            .patch('/v1/edit-meetup-post/1')
             .end((err, res) => {
                 if (err) throw err;
                 expect(res).to.be.an('object');
@@ -110,7 +110,7 @@ describe('/EDIT specific meetup', () => {
     });
     it('should retrn status 404 error', (done) => {
         chai.request(app)
-            .get('/v1/edit-meetup-post/1')
+            .patch('/v1/edit-meetup-post/1')
             .end((err, res) => {
                 expect(res.status).to.be.equal(404);
                 done();
@@ -125,7 +125,7 @@ describe('/EDIT specific meetup', () => {
 describe('/DELETE specific meetup', () => {
     it('should delete specific meetup', (done) => {
         chai.request(app)
-            .get('/v1/delete-meetup/1')
+            .delete('/v1/meetup/1')
             .end((err, res) => {
                 expect(res).to.be.an('object');
                 done();
@@ -133,7 +133,7 @@ describe('/DELETE specific meetup', () => {
     });
     it('should return status 404 error', (done) => {
         chai.request(app)
-            .get('/v1/delete-meetup/1')
+            .delete('/v1/meetup/1')
             .end((err, res) => {
                 expect(res.status).to.be.equal(404);
                 done();

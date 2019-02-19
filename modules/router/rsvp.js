@@ -3,16 +3,16 @@ import bodyparser from 'body-parser';
 import Joi from 'joi';
 import meetupdb from '../db/db';
 
-const rsvp = express();
+const router = express.Router();
 
-rsvp.use(bodyparser.urlencoded({ extended: false }));
-rsvp.use(bodyparser.json());
+router.use(bodyparser.urlencoded({ extended: true }));
+router.use(bodyparser.json());
 
 
 /**
  *  Rsvp endpoint
  */
-rsvp.post('/v1/rsvp-meetup/:id', (req, res) => {
+router.post('/:id', (req, res) => {
     // eslint-disable-next-line radix
     const requestId = parseInt(req.params.id);
 
@@ -33,7 +33,7 @@ rsvp.post('/v1/rsvp-meetup/:id', (req, res) => {
     const date = rsvpmeetup.happeningOn;
     const user = User.id;
 
-    if (result.error) return res.json({ status: 422, message: 'You can either enter "maybe", "no" and "yes"' });
+    if (result.error) return res.status(422).json({ message: 'You can either enter "maybe", "no" and "yes"' });
 
     const RSVP = {
         id,
@@ -43,8 +43,11 @@ rsvp.post('/v1/rsvp-meetup/:id', (req, res) => {
         user,
         response: req.body.response,
     };
-    return res.status(200).send(RSVP);
+    return res.status(200).json({
+        data: RSVP,
+        message: 'RSVP successfully posted'
+    });
 });
 
 
-module.exports = rsvp;
+module.exports = router;

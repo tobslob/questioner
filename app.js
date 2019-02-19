@@ -1,19 +1,19 @@
 import http from 'http';
-// import core from './modules/core';
-import meetup from './modules/v1/meetup';
-import question from './modules/v1/question';
-import rsvp from './modules/v1/rsvp';
+import express from 'express';
+import morgan from 'morgan';
+import coreRouter from './modules/core';
+import meetupRouter from './modules/router/meetup';
+import questionRouter from './modules/router/question';
+import rsvpRouter from './modules/router/rsvp';
 
-const express = require('express');
 
 const app = express();
-const morgan = require('morgan');
 
 app.use(morgan('combined'));
-// app.use(core);
-app.use(meetup);
-app.use(question);
-app.use(rsvp);
+app.use(coreRouter);
+app.use('/v1/meetup', meetupRouter);
+app.use('/v1/question', questionRouter);
+app.use('/v1/rsvp', rsvpRouter);
 
 const server = http.createServer(app);
 const port = process.env.PORT || 3000;

@@ -3,10 +3,10 @@ import bodyparser from 'body-parser';
 import Joi from 'joi';
 import meetupdb from '../db/db';
 
-const question = express();
+const router = express.Router();
 
-question.use(bodyparser.urlencoded({ extended: false }));
-question.use(bodyparser.json());
+router.use(bodyparser.urlencoded({ extended: true }));
+router.use(bodyparser.json());
 
 /**
  * @param {} quest
@@ -24,7 +24,7 @@ const validateQuest = (quest) => {
 /**
  * users api to create question/comment
  */
-question.post('/v1/create-question', (req, res) => {
+router.post('/', (req, res) => {
     const { error } = validateQuest(req.body);
 
     const id = meetupdb.questions.length + 1;
@@ -40,14 +40,17 @@ question.post('/v1/create-question', (req, res) => {
         title: req.body.title,
         body: req.body.body,
     };
-    return res.status(200).send(quest);
+    return res.status(200).json({
+        data: quest,
+        message: 'question successfully posted'
+    });
 });
 
 
 /**
  * upvote question api
  */
-question.get('/v1/upvote-question/:id', (req, res) => {
+router.get('/upvote/:id', (req, res) => {
     // eslint-disable-next-line radix
     const requestId = parseInt(req.params.id);
     const getQuestion = meetupdb.questions;
@@ -59,14 +62,14 @@ question.get('/v1/upvote-question/:id', (req, res) => {
 
     if (!specQuestion) return res.status(404).json({ message: 'Invalid' });
     upVote();
-    return res.status(200).json({ message: 'success' });
+    return res.status(200).json({ vote: specQuestion.votes, message: 'success' });
 });
 
 
 /**
  * downvote question api
  */
-question.get('/v1/downvote-question/:id', (req, res) => {
+router.get('/downvote/:id', (req, res) => {
     // eslint-disable-next-line radix
     const requestId = parseInt(req.params.id);
     const getQuestion = meetupdb.questions;
@@ -78,8 +81,8 @@ question.get('/v1/downvote-question/:id', (req, res) => {
 
     if (!specQuestion) return res.status(404).json({ message: 'Invalid' });
     downVote();
-    return res.status(200).json({ message: 'success' });
+    return res.status(200).json({ vote: specQuestion.votes, message: 'success' });
 });
 
 
-module.exports = question;
+module.exports = router;
