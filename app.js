@@ -11,9 +11,9 @@ const app = express();
 
 app.use(morgan('combined'));
 app.use(coreRouter);
-app.use('/v1/meetup', meetupRouter);
-app.use('/v1/question', questionRouter);
-app.use('/v1/rsvp', rsvpRouter);
+app.use('/api/v1/meetup', meetupRouter);
+app.use('/api/v1/question', questionRouter);
+app.use('/api/v1/rsvp', rsvpRouter);
 
 const server = http.createServer(app);
 const port = process.env.PORT || 3000;
