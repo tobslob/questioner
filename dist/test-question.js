@@ -2,8 +2,8 @@ import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../../app';
 
-// eslint-disable-next-line prefer-destructuring
-const expect = chai.expect;
+
+const { expect } = chai;
 
 chai.use(chaiHttp);
 
@@ -18,7 +18,7 @@ describe('/POST question', () => {
     };
     it('should return an object', (done) => {
         chai.request(app)
-            .post('/v1/create-question')
+            .post('/v1/question')
             .send(data)
             .end((err, res) => {
                 expect(res).be.an('object');
@@ -27,7 +27,7 @@ describe('/POST question', () => {
     });
     it('should return 200 OK', (done) => {
         chai.request(app)
-            .post('/v1/create-question')
+            .post('/v1/question')
             .send(data)
             .end((err, res) => {
                 expect(res.status).be.equal(200);
@@ -40,12 +40,12 @@ describe('/POST question', () => {
 /**
  * Endpoint unit tests for question upvote
  */
-describe('/POST question', () => {
-    it('should return 404 error', (done) => {
+describe('/GET question upvote', () => {
+    it('should return 200 status code', (done) => {
         chai.request(app)
-            .post('/v1/upvote-question/1')
+            .get('/v1/question//upvote/1')
             .end((err, res) => {
-                expect(res.status).be.equal(404);
+                expect(res.status).be.equal(200);
                 done();
             });
     });
@@ -55,12 +55,12 @@ describe('/POST question', () => {
 /**
  * Endpoint unit tests for question downvote
  */
-describe('/POST question', () => {
-    it('should return 404 error', (done) => {
+describe('/GET question downvote', () => {
+    it('should return 200 status code', (done) => {
         chai.request(app)
-            .post('/v1/downvote-question/2')
+            .get('/v1/question/downvote/1')
             .end((err, res) => {
-                expect(res.status).be.equal(404);
+                expect(res.status).be.equal(200);
                 done();
             });
     });
