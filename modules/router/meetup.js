@@ -1,12 +1,12 @@
 import express from 'express';
-import bodyparser from 'body-parser';
 import Joi from 'joi';
 import meetupdb from '../db/db';
+import bodyparser from 'body-parser';
 
-const meetup = express();
+const router = express.Router();
 
-meetup.use(bodyparser.urlencoded({ extended: false }));
-meetup.use(bodyparser.json());
+router.use(bodyparser.urlencoded({ extended: true }));
+router.use(bodyparser.json());
 
 /**
  *Validator params
@@ -27,7 +27,7 @@ const validatePost = (post) => {
 /**
  *api to create meetup
 */
-meetup.post('/v1/create-meetup', (req, res) => {
+router.post('/', (req, res) => {
     const { error } = validatePost(req.body);
     const id = meetupdb.meetuppost.length + 1;
     const createdOn = new Date();
@@ -44,25 +44,31 @@ meetup.post('/v1/create-meetup', (req, res) => {
         Tags: req.body.Tags,
     };
     meetupdb.meetuppost.push(post);
-    return res.status(201).send(post);
+    return res.status(201).json({
+        data: post,
+        message: 'meetup successfully posted'
+    });
 });
 
 
 /*
 *api to get all meetup post
 */
-meetup.get('/v1/get-all-meetup', (req, res) => {
+router.get('/', (req, res) => {
     const result = meetupdb.meetuppost;
     if (!result) return res.status(422).send('an error occur!');
 
-    return res.status(200).json(result);
+    return res.status(200).json({
+        data: result,
+        message: 'success'
+    });
 });
 
 
 /*
  * api to get specific meetup
  */
-meetup.get('/v1/get-specific-meetup/:id', (req, res) => {
+router.get('/:id', (req, res) => {
     // eslint-disable-next-line radix
     const requestelement = parseInt(req.params.id);
     const specMeetup = meetupdb.meetuppost;
@@ -70,14 +76,17 @@ meetup.get('/v1/get-specific-meetup/:id', (req, res) => {
     const specmeetup = specMeetup.find(specific => specific.id === requestelement);
     if (!specmeetup) return res.status(404).send('no meetup id match');
 
-    return res.status(200).send(specmeetup);
+    return res.status(200).json({
+        data: specmeetup,
+        message: 'success'
+    });
 });
 
 
 /*
  * An API endpoint to edit meetup post
  */
-meetup.put('/v1/edit-meetup-post/:id', (req, res) => {
+router.patch('/:id', (req, res) => {
     // eslint-disable-next-line radix
     const requestelement = parseInt(req.params.id);
     const specMeetup = meetupdb.meetuppost;
@@ -94,14 +103,17 @@ meetup.put('/v1/edit-meetup-post/:id', (req, res) => {
     specmeetup.body = req.body.body;
     specmeetup.happeningOn = req.body.happeningOn;
     specmeetup.Tags = req.body.Tags;
-    return res.send(specmeetup);
+    return res.json({
+        data: specmeetup,
+        message: 'success'
+    });
 });
 
 
 /*
  *restful api to delete meetup
  */
-meetup.delete('/v1/delete-meetup/:id', (req, res) => {
+router.delete('/:id', (req, res) => {
     // eslint-disable-next-line radix
     const deleteId = parseInt(req.params.id);
     const specMeetup = meetupdb.meetuppost;
@@ -115,4 +127,4 @@ meetup.delete('/v1/delete-meetup/:id', (req, res) => {
 });
 
 
-module.exports = meetup;
+module.exports = router;
