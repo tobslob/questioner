@@ -18,7 +18,7 @@ describe('/POST question', () => {
     };
     it('should return an object', (done) => {
         chai.request(app)
-            .post('/v1/question')
+            .post('/api/v1/question')
             .send(data)
             .end((err, res) => {
                 expect(res).be.an('object');
@@ -27,7 +27,7 @@ describe('/POST question', () => {
     });
     it('should return 200 OK', (done) => {
         chai.request(app)
-            .post('/v1/question')
+            .post('/api/v1/question')
             .send(data)
             .end((err, res) => {
                 expect(res.status).be.equal(200);
@@ -43,7 +43,7 @@ describe('/POST question', () => {
 describe('/GET question upvote', () => {
     it('should return 200 status code', (done) => {
         chai.request(app)
-            .get('/v1/question//upvote/1')
+            .get('/api/v1/question//upvote/1')
             .end((err, res) => {
                 expect(res.status).be.equal(200);
                 done();
@@ -58,7 +58,7 @@ describe('/GET question upvote', () => {
 describe('/GET question downvote', () => {
     it('should return 200 status code', (done) => {
         chai.request(app)
-            .get('/v1/question/downvote/1')
+            .get('/api/v1/question/downvote/1')
             .end((err, res) => {
                 expect(res.status).be.equal(200);
                 done();

@@ -1,12 +1,8 @@
 import express from 'express';
 import Joi from 'joi';
 import meetupdb from '../db/db';
-import bodyparser from 'body-parser';
 
 const router = express.Router();
-
-router.use(bodyparser.urlencoded({ extended: true }));
-router.use(bodyparser.json());
 
 /**
  *Validator params
