@@ -1,6 +1,7 @@
 import express from 'express';
 import Joi from 'joi';
-import meetupdb from '../db/db';
+import Question from '../models/question';
+import mongoose from 'mongoose';
 
 const router = express.Router();
 
@@ -22,62 +23,129 @@ const validateQuest = (quest) => {
  */
 router.post('/', (req, res) => {
     const { error } = validateQuest(req.body);
-
-    const id = meetupdb.questions.length + 1;
-    const createdOn = Date();
-    const createdBy = 1002;
-    const votes = 0;
     if (error) return res.status(422).json({ message: error.details[0].message });
-    const quest = {
-        id,
-        createdOn,
-        createdBy,
-        votes,
+    const questions = new Question({
+        _id: new mongoose.Types.ObjectId(), 
         title: req.body.title,
+        votes: 0,
         body: req.body.body,
-    };
-    return res.status(200).json({
-        data: quest,
-        message: 'question successfully posted'
     });
+    questions
+        .save()
+        .then((question) => {
+            res.status(200).json({
+                message: 'Question successfully posted',
+                createdQuestion: {
+                    _id: question._id,
+                    title: question.title,
+                    votes: question.votes,
+                    body: question.body,
+                    createdOn: question.createdOn
+                },
+                request: {
+                    type: 'GET',
+                    url: 'http://localhost:3000/api/v1/question/' + question._id
+                }
+            });
+        })
+        .catch((err) => {
+            // eslint-disable-next-line no-console
+            console.log(err);
+            res.status(422).json(err);
+        });
 });
 
+/**
+ * GET question api
+ */
+router.get('/', (req, res) =>{
+    Question.find()
+        .select('_id title votes createdOn body')
+        .exec()
+        .then((results) =>{
+            const response = {
+                count: results.length,
+                questions: results.map(result => {
+                    return{
+                        _id: result._id,
+                        title: result.title,
+                        votes: result.votes,
+                        createdOn: result.createdOn,
+                        body: result.body,
+                        request: {
+                            type: 'GET',
+                            url: 'http://localhost:3000/api/v1/question/' + result._id
+                        }
+                    };
+                })
+            };
+            res.status(200).json(response);
+        })
+        .catch((err) =>{
+            res.status(500).json(err);
+        });
+});
+
+/**
+ * Get a single question
+ */
+router.get('/:id', (req, res) => {
+    const id = req.params.id;
+    Question.findById(id)
+        .select('_id title body votes createdOn')
+        .exec()
+        .then((result) =>{
+            res.status(200).json({
+                message: 'successfully retrieved',
+                question: result,
+                request: {
+                    type: 'GET',
+                    url: 'http://localhost:3000/api/v1/question/'
+                }
+            });
+        })
+        .catch((err) => {
+            res.status(404).json(err);
+        });
+});
 
 /**
  * upvote question api
  */
-router.get('/upvote/:id', (req, res) => {
-    // eslint-disable-next-line radix
-    const requestId = parseInt(req.params.id);
-    const getQuestion = meetupdb.questions;
-
-    const specQuestion = getQuestion.find(specific => specific.id === requestId);
-
-    // eslint-disable-next-line no-plusplus
-    const upVote = () => specQuestion.votes++;
-
-    if (!specQuestion) return res.status(404).json({ message: 'Invalid' });
-    upVote();
-    return res.status(200).json({ vote: specQuestion.votes, message: 'success' });
+router.patch('/:questionId/upvote', (req, res) => {
+    const id = req.params.questionId;
+    Question.updateOne({_id: id}, {$inc: { votes: 1}})
+        .exec()
+        .then(() =>{
+            res.status(200).json({
+                message: 'upvote successful',
+                request: {
+                    type: 'GET',
+                    url: 'http://localhost:3000/api/v1/question/' + id
+                }
+            });
+        })
+        .catch((err) => res.status(500).json(err));
 });
 
 
 /**
  * downvote question api
  */
-router.get('/downvote/:id', (req, res) => {
-    // eslint-disable-next-line radix
-    const requestId = parseInt(req.params.id);
-    const getQuestion = meetupdb.questions;
-
-    const specQuestion = getQuestion.find(specific => specific.id === requestId);
-
-    // eslint-disable-next-line no-plusplus
-    const downVote = () => specQuestion.votes--;
-
-    if (!specQuestion) return res.status(404).json({ message: 'Invalid' });
-    downVote();
-    return res.status(200).json({ vote: specQuestion.votes, message: 'success' });
+router.patch('/:questionId/downvote', (req, res) => {
+    const id = req.params.questionId;
+    Question.updateOne({_id: id}, {$inc: { votes: -1}})
+        .exec()
+        .then(() =>{
+            res.status(200).json({
+                message: 'downvote successful',
+                request: {
+                    type: 'GET',
+                    url: 'http://localhost:3000/api/v1/question/' + id
+                }
+            });
+        })
+        .catch((err) => res.status(500).json(err));
 });
 
 

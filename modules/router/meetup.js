@@ -1,8 +1,33 @@
 import express from 'express';
 import Joi from 'joi';
-import meetupdb from '../db/db';
+import Meetup from '../models/meetup';
+import mongoose from 'mongoose';
+import multer from 'multer';
 
 const router = express.Router();
+const fileFilter = (req, file, cb) =>{
+    // reject a file
+    if (file.mimetype ==='image/jpeg' || file.mimetype === 'image/png'){
+        cb(null, true);
+    } else {
+        cb(new Error('Only .jpeg or .png files are accepted'), true);
+    }
+};
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, './uploads');
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${new Date().toISOString().replace(/:/g, '-')}${file.originalname}`);
+    }
+});
+const upload = multer({
+    storage: storage,
+    limits:{
+        fileSize: 1024 * 1024 * 5
+    },
+    fileFilter: fileFilter
+});
 
 /**
  *Validator params
@@ -15,6 +40,7 @@ const validatePost = (post) => {
         body: Joi.string().trim().required(),
         happeningOn: Joi.date().required(),
         Tags: Joi.array().items(Joi.string().trim()).required(),
+        meetupImage: Joi.string()
     });
     return Joi.validate(post, schema);
 };
@@ -23,27 +49,45 @@ const validatePost = (post) => {
 /**
  *api to create meetup
 */
-router.post('/', (req, res) => {
+router.post('/', upload.single('meetupImage'),(req, res) => {
     const { error } = validatePost(req.body);
-    const id = meetupdb.meetuppost.length + 1;
-    const createdOn = new Date();
     if (error) return res.status(422).json({ message: error.details[0].message });
-
-    const post = {
-        id,
-        createdOn,
+    
+    if (!req.file) return res.send('Please upload a file');
+    // eslint-disable-next-line no-console
+    console.log(req.file);
+    const meetup = new Meetup({
+        _id: new mongoose.Types.ObjectId(),
         topic: req.body.topic,
-        images: req.body.images,
         location: req.body.location,
         body: req.body.body,
         happeningOn: req.body.happeningOn,
         Tags: req.body.Tags,
-    };
-    meetupdb.meetuppost.push(post);
-    return res.status(201).json({
-        data: post,
-        message: 'meetup successfully posted'
+        meetupImage: req.file.path
     });
+    meetup
+        .save()
+        .then((result) => {
+            res.status(201).json({
+                message: 'Created meetup successfully',
+                CreatedMeetup: {
+                    _id:result._id,
+                    topic: result.topic,
+                    location: result.location,
+                    body: result.body, 
+                    happeningOn: result.happeningOn,
+                    createdOn: result.createdOn,
+                    meetupImage: result.meetupImage,
+                    request: {
+                        type: 'GET',
+                        url: 'http://localhost:3000/api/v1/meetup/' + result._id
+                    }
+                }
+            });
+        })
+        .catch( err => {
+            res.status(422).json(err);
+        });
 });
 
 
@@ -51,13 +95,33 @@ router.post('/', (req, res) => {
 *api to get all meetup post
 */
 router.get('/', (req, res) => {
-    const result = meetupdb.meetuppost;
-    if (!result) return res.status(422).send('an error occur!');
-
-    return res.status(200).json({
-        data: result,
-        message: 'success'
-    });
+    Meetup.find()
+        .select('_id topic location body happeningOn createdOn Tags meetupImage')
+        .exec()
+        .then(docs => {
+            const response = {
+                count: docs.length,
+                Meetups: docs.map(doc => {
+                    return{
+                        _id:doc._id,
+                        topic: doc.topic,
+                        location: doc.location,
+                        body: doc.body,
+                        happeningOn: doc.happeningOn,
+                        createdOn: doc.createdOn,
+                        meetupImage: doc.meetupImage,
+                        request: {
+                            type: 'GET',
+                            url: 'http://localhost:3000/api/v1/meetup/' + doc._id
+                        }
+                    };
+                })
+            };
+            res.status(200).json(response);
+        })
+        .catch(err => {
+            res.status(500).json(err);
+        });
 });
 
 
@@ -65,17 +129,26 @@ router.get('/', (req, res) => {
  * api to get specific meetup
  */
 router.get('/:id', (req, res) => {
-    // eslint-disable-next-line radix
-    const requestelement = parseInt(req.params.id);
-    const specMeetup = meetupdb.meetuppost;
-
-    const specmeetup = specMeetup.find(specific => specific.id === requestelement);
-    if (!specmeetup) return res.status(404).send('no meetup id match');
-
-    return res.status(200).json({
-        data: specmeetup,
-        message: 'success'
-    });
+    
+    const requestelement = req.params.id;
+    Meetup.findById(requestelement)
+        .select('_id topic location body happeningOn createdOn Tags meetupImage')
+        .exec()
+        .then(doc=>{
+            res.status(200).json({
+                Meetup: doc,
+                request: {
+                    type: 'GET',
+                    url: 'http://localhost:3000/api/v1/meetup/' + requestelement
+                }
+            });
+        })
+        .catch(err => {
+            res.status(500).json({ 
+                error: err,
+                message: `the meetup with ID:${requestelement} is not found`
+            });
+        });
 });
 
 
@@ -83,26 +156,27 @@ router.get('/:id', (req, res) => {
  * An API endpoint to edit meetup post
  */
 router.patch('/:id', (req, res) => {
-    // eslint-disable-next-line radix
-    const requestelement = parseInt(req.params.id);
-    const specMeetup = meetupdb.meetuppost;
-
-    const specmeetup = specMeetup.find(specific => specific.id === requestelement);
-    if (!specmeetup) res.status(404).send('no meetup id match');
-
-    const { error } = validatePost(req.body);
-    if (error) return res.status(422).json({ message: error.details[0].message });
-
-    specmeetup.topic = req.body.topic;
-    specmeetup.images = req.body.images;
-    specmeetup.location = req.body.location;
-    specmeetup.body = req.body.body;
-    specmeetup.happeningOn = req.body.happeningOn;
-    specmeetup.Tags = req.body.Tags;
-    return res.json({
-        data: specmeetup,
-        message: 'success'
-    });
+    const id = req.params.id;
+    const updateOps = {};
+    for (const ops of req.body) {
+        updateOps[ops.propName] = ops.value;
+    }
+    Meetup.updateOne({ _id: id }, { $set: updateOps })
+        .exec()
+        .then( ()=> {
+            return res.status(200).json({
+                message: 'Successfully updated',
+                request: {
+                    type: 'GET',
+                    url: 'http://localhost:3000/api/v1/meetup/' + id
+                }
+            });
+        })
+        .catch(err=>{
+            return res.status(500).json({
+                error: err
+            });
+        });
 });
 
 
@@ -110,17 +184,23 @@ router.patch('/:id', (req, res) => {
  *restful api to delete meetup
  */
 router.delete('/:id', (req, res) => {
-    // eslint-disable-next-line radix
-    const deleteId = parseInt(req.params.id);
-    const specMeetup = meetupdb.meetuppost;
-
-    const specmeetup = specMeetup.find(specific => specific.id === deleteId);
-    if (!specmeetup) return res.status(404).send('no meetup id match');
-
-    const index = specMeetup.indexOf(specmeetup);
-    specMeetup.splice(index, 1);
-    return res.status(200).json(`meetup with an id: ${deleteId} has been deleted`);
+    const id = req.params.id;
+    Meetup.deleteOne({ _id: id })
+        .exec()
+        .then(() => {
+            return res.status(200).json({
+                message: `the meetup with ID:${id} has successfully been deleted`,
+                request: {
+                    type: 'GET',
+                    url: 'http://localhost:3000/api/v1/meetup/'
+                }
+            });
+        })
+        .catch(err => {
+            return res.status(500).json({
+                error: err
+            });
+        });
 });
-
 
 module.exports = router;
