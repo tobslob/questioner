@@ -8,12 +8,39 @@ import rsvpRouter from './modules/router/rsvp';
 import bodyparser from 'body-parser';
 import mongoose from 'mongoose';
 
-const app = express();
 
-mongoose.connect('mongodb://tobslob:' + process.env.MONGO_ATLAS_PW + '@cluster0-shard-00-00-tubzx.mongodb.net:27017,cluster0-shard-00-01-tubzx.mongodb.net:27017,cluster0-shard-00-02-tubzx.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true', {
-    useMongoClient: true
-});
+const app = express();
+const Mockgoose = require('mockgoose').Mockgoose;
+const mockgoose = new Mockgoose(mongoose);
+const DB_URI = 'mongodb://tobslob:Kazeem27$@cluster0-shard-00-00-tubzx.mongodb.net:27017,cluster0-shard-00-01-tubzx.mongodb.net:27017,cluster0-shard-00-02-tubzx.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true';
+
+const connect = () => {
+    return new Promise((resolve, reject) => {
+        if(process.env.NODE_ENV === 'test') {
+            mockgoose.prepareStorage()
+                .then(() => {
+                    mongoose.connect(DB_URI, {useNewUrlParser: true, useCreateIndex: true})
+                        .then((res, err) => {
+                            if (err) return reject(err);
+                            resolve();
+                        });
+                });
+        } else {
+            mongoose.connect(DB_URI, {useNewUrlParser: true, useCreateIndex: true})
+                .then((res, err) => {
+                    if (err) return reject(err);
+                    resolve();
+                });
+        }
+    });
+};
+
+const close = () => {
+    return mongoose.disconnect();
+};
+
 app.use(morgan('dev'));
+app.use('/uploads', express.static('uploads'));
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(bodyparser.json());
 
@@ -48,9 +75,11 @@ app.use((req, res) =>{
 const server = http.createServer(app);
 const port = process.env.PORT || 3000;
 
-server.listen(port, () => {
-    /* eslint-disable no-console */
-    console.log(`listening to server on 127.0.0.1:${port}`);
-});
+connect().then(
+    server.listen(port, () => {
+        /* eslint-disable no-console */
+        console.log(`listening to server on 127.0.0.1:${port}`);
+    })
+);
 
-module.exports = app;
+module.exports = {app, connect, close};
