@@ -1,21 +1,27 @@
+process.env.NODE_ENV = 'test';
 import chai from 'chai';
-import chaiHttp from 'chai-http';
-import app from '../../app';
-import meetup from '../db/meetupdb';
+import request from 'supertest';
+import {app, connect, close} from '../../app';
 
 const { expect } = chai;
 
-chai.use(chaiHttp);
+before((done) => {
+    connect()
+        .then(() => done())
+        .catch((err) => done(err));
+});
+
+after((done) => {
+    close()
+        .then(() => done())
+        .catch((err) => done(err));
+});
 
 /**
  * Post meetup endpoint test
  */
-describe('/POST meetup', () => {
-    const id = meetup.meetuppost.length + 1;
-    const createdOn = new Date();
+describe('POST /post meetup', () =>{
     const data = {
-        id,
-        createdOn,
         topic: 'Agile meetup',
         happeningOn: '2019-01-28T17:31:47.000Z',
         body: 'This is description on the best programming lang to learn in 2019',
@@ -25,24 +31,38 @@ describe('/POST meetup', () => {
             'mocha',
             'chai',
         ],
+        meetupImage: 'Capture.PNG'
     };
-    it('should return 422 error', (done) => {
-        chai.request(app)
-            .post('/api/v1/meetup')
-            .send(data)
-            .end((err, res) => {
-                expect(res.status).to.equal(422);
-                done();
-            });
-    });
-    it('should post an object', (done) => {
-        chai.request(app)
-            .post('/api/v1/meetup')
-            .end((err, res) => {
-                if (err) throw err;
-                expect(res).to.be.an('object');
-                done();
-            });
+    describe('POST /meetup', () => {
+        it('Create creating a new meetup works', (done) => {
+            request(app)
+                .post('/api/v1/meetup')
+                .send(data)
+                .then((res) => {
+                    expect(res.status).to.equal(200);
+                    expect(res.body).to.be.an('object');
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+        it('should fail to post meetup', (done) =>{
+            request(app)
+                .post('/api/v1/meetup')
+                .send({
+                    topic: 'Agile meetup',
+                    happeningOn: '2019-01-28T17:31:47.000Z',
+                    body: 'This is description on the best programming lang to learn in 2019',
+                    Tags: [
+                        'Agile',
+                        'mocha',
+                        'chai',
+                    ], })
+                .then((res) => {
+                    expect(res.status).to.equal(422);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
     });
 });
 
@@ -50,23 +70,17 @@ describe('/POST meetup', () => {
 /**
  * Get all meetup endpoint test
  */
-describe('/GET all meetup', () => {
+describe('GET /all meetup', () => {
     it('should retrieve all meetup', (done) => {
-        chai.request(app)
+        request(app)
             .get('/api/v1/meetup')
-            .end((err, res) => {
-                if (err) throw err;
+            .then((res) => {
+                expect(res.status).to.equal(200);
                 expect(res).to.be.an('object');
+                expect(res).not.to.have.property('_v');
                 done();
-            });
-    });
-    it('should return status code of 200', (done) => {
-        chai.request(app)
-            .get('/api/v1/meetup')
-            .end((err, res) => {
-                expect(res.status).to.be.equal(200);
-                done();
-            });
+            })
+            .catch((err) => done(err));
     });
 });
 
@@ -74,23 +88,16 @@ describe('/GET all meetup', () => {
 /**
  * Get a specific meetup endpoint test
  */
-describe('/GET specific meetup', () => {
+describe('GET /specific meetup', () => {
     it('should retrieve specific meetup', (done) => {
-        chai.request(app)
-            .get('/api/v1/meetup/1')
-            .end((err, res) => {
-                if (err) throw err;
+        request(app)
+            .get('/api/v1/meetup/5c73e0625ed99017fcda8d2c')
+            .then((res) => {
+                expect(res.status).to.equal(200);
                 expect(res).to.be.an('object');
                 done();
-            });
-    });
-    it('should return status code of 200', (done) => {
-        chai.request(app)
-            .get('/api/v1/meetup/1')
-            .end((err, res) => {
-                expect(res.status).to.be.equal(200);
-                done();
-            });
+            })
+            .catch((err) => done(err));
     });
 });
 
@@ -98,23 +105,18 @@ describe('/GET specific meetup', () => {
 /*
  * Edit meetup post endpoint test
  */
-describe('/EDIT specific meetup', () => {
-    it('should edit specific meetup', (done) => {
-        chai.request(app)
-            .patch('/api/v1/edit-meetup-post/1')
-            .end((err, res) => {
-                if (err) throw err;
+describe('PATCH /specific meetup', () => {
+    it('should edit location of the spec meetup', (done) => {
+        request(app)
+            .patch('/api/v1/meetup/5c73e09afa470001a49177a7')
+            .send([{'propName': 'location', 'value': 'Patched ikeja'}
+            ])
+            .then((res) => {
+                expect(res.status).to.be.equal(200);
                 expect(res).to.be.an('object');
                 done();
-            });
-    });
-    it('should retrn status 404 error', (done) => {
-        chai.request(app)
-            .patch('/api/v1/edit-meetup-post/1')
-            .end((err, res) => {
-                expect(res.status).to.be.equal(404);
-                done();
-            });
+            })
+            .catch((err) => done(err));
     });
 });
 
@@ -122,20 +124,13 @@ describe('/EDIT specific meetup', () => {
 /*
  * Delete meetup post endpoint test
  */
-describe('/DELETE specific meetup', () => {
+describe('DELETE /specific meetup', () => {
     it('should delete specific meetup', (done) => {
-        chai.request(app)
-            .delete('/api/v1/meetup/1')
+        request(app)
+            .delete('/api/v1/meetup/5c6ea5afd8ca562ba8517a09')
             .end((err, res) => {
+                expect(res.status).to.equal(200);
                 expect(res).to.be.an('object');
-                done();
-            });
-    });
-    it('should return status 404 error', (done) => {
-        chai.request(app)
-            .delete('/api/v1/meetup/1')
-            .end((err, res) => {
-                expect(res.status).to.be.equal(404);
                 done();
             });
     });

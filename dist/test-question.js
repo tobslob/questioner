@@ -1,11 +1,21 @@
+process.env.NODE_ENV === 'test';
 import chai from 'chai';
-import chaiHttp from 'chai-http';
-import app from '../../app';
-
+import request from 'supertest';
+import {app, connect, close} from '../../app';
 
 const { expect } = chai;
 
-chai.use(chaiHttp);
+before((done) => {
+    connect()
+        .then(() => done())
+        .catch((err) => done(err));
+});
+
+after((done) => {
+    close()
+        .then(() => done())
+        .catch((err) => done(err));
+});
 
 
 /**
@@ -16,23 +26,24 @@ describe('/POST question', () => {
         title: 'test title',
         body: 'my test description',
     };
-    it('should return an object', (done) => {
-        chai.request(app)
+    it('should post question', (done) => {
+        request(app)
             .post('/api/v1/question')
             .send(data)
-            .end((err, res) => {
-                expect(res).be.an('object');
+            .then((res) => {
+                expect(res.status).to.equal(200);
+                expect(res.body).to.be.an('object');
+                expect(res.body).to.have.property('message').and.equal('Question successfully posted');
+                expect(res.body).to.have.property('createdQuestion').and.haveOwnProperty('_id');
+                expect(res.body).to.have.property('createdQuestion').and.haveOwnProperty('title');
+                expect(res.body).to.have.property('createdQuestion').and.haveOwnProperty('votes');
+                expect(res.body).to.have.property('createdQuestion').and.haveOwnProperty('body');
+                expect(res.body).to.have.property('createdQuestion').and.haveOwnProperty('createdOn');
+                expect(res.body).to.have.property('request').and.haveOwnProperty('type');
+                expect(res.body).to.have.property('request').and.haveOwnProperty('url');
                 done();
-            });
-    });
-    it('should return 200 OK', (done) => {
-        chai.request(app)
-            .post('/api/v1/question')
-            .send(data)
-            .end((err, res) => {
-                expect(res.status).be.equal(200);
-                done();
-            });
+            })
+            .catch((err) => done(err));
     });
 });
 
@@ -40,14 +51,15 @@ describe('/POST question', () => {
 /**
  * Endpoint unit tests for question upvote
  */
-describe('/GET question upvote', () => {
-    it('should return 200 status code', (done) => {
-        chai.request(app)
-            .get('/api/v1/question//upvote/1')
-            .end((err, res) => {
+describe('PATCH /question upvote', () => {
+    it('should successfully increase votes', (done) => {
+        request(app)
+            .patch('/api/v1/question/5c7542ad885502309cb63c27/upvote')
+            .then((res) => {
                 expect(res.status).be.equal(200);
                 done();
-            });
+            })
+            .catch((err) => done(err));
     });
 });
 
@@ -55,13 +67,14 @@ describe('/GET question upvote', () => {
 /**
  * Endpoint unit tests for question downvote
  */
-describe('/GET question downvote', () => {
-    it('should return 200 status code', (done) => {
-        chai.request(app)
-            .get('/api/v1/question/downvote/1')
-            .end((err, res) => {
+describe('PATCH /question downvote', () => {
+    it('should successfully decrease votes', (done) => {
+        request(app)
+            .patch('/api/v1/question/5c7542ad885502309cb63c27/downvote')
+            .then((res) => {
                 expect(res.status).be.equal(200);
                 done();
-            });
+            })
+            .catch((err) => done(err));
     });
 });
