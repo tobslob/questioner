@@ -5,6 +5,7 @@ import coreRouter from './modules/core';
 import meetupRouter from './modules/router/meetup';
 import questionRouter from './modules/router/question';
 import rsvpRouter from './modules/router/rsvp';
+import userRouter from './modules/router/user';
 import bodyparser from 'body-parser';
 import mongoose from 'mongoose';
 
@@ -62,12 +63,13 @@ app.use(coreRouter);
 app.use('/api/v1/meetup', meetupRouter);
 app.use('/api/v1/question', questionRouter);
 app.use('/api/v1/rsvp', rsvpRouter);
+app.use('/api/v1/user', userRouter);
 
 
 app.use((req, res) =>{
-    return res.status(404).json({
+    return res.status(400).json({
         error: {
-            message: 'BAD REQUEST'
+            message: 'NO SUCH ROUTE, MIGHT BE AVAILABLE IN FUTURE'
         }
     });
 });
