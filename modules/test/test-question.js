@@ -1,21 +1,8 @@
-process.env.NODE_ENV === 'test';
 import chai from 'chai';
 import request from 'supertest';
-import {app, connect, close} from '../../app';
+import app from '../../app';
 
 const { expect } = chai;
-
-before((done) => {
-    connect()
-        .then(() => done())
-        .catch((err) => done(err));
-});
-
-after((done) => {
-    close()
-        .then(() => done())
-        .catch((err) => done(err));
-});
 
 
 /**
@@ -23,7 +10,7 @@ after((done) => {
  */
 describe('/POST question', () => {
     const data = {
-        title: 'test title',
+        title: 'title',
         body: 'my test description',
     };
     it('should post question', (done) => {

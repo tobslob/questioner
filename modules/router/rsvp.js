@@ -1,31 +1,31 @@
-import express from 'express';
-import checkAuth from '../middleware/check-auth';
-import rsvpControllers from '../controllers/rsvp';
+// import express from 'express';
+// // import checkAuth from '../middleware/check-auth';
+// import rsvpControllers from '../controllers/rsvp';
 
-const router = express.Router();
-
-
-/**
- *  Rsvp endpoint
- */
-router.post('/', checkAuth, rsvpControllers.post_rsvp);
+// const router = express.Router();
 
 
-/**
- * GET all rsvp api endpoint
- */
-router.get('/', checkAuth, rsvpControllers.get_all_rsvp);
+// /**
+//  *  Rsvp endpoint
+//  */
+// router.post('/', rsvpControllers.post_rsvp);
 
 
-/**
- * GET single rsvp
- */
-router.get('/:id', checkAuth, rsvpControllers.get_rsvp);
+// /**
+//  * GET all rsvp api endpoint
+//  */
+// router.get('/', rsvpControllers.get_all_rsvp);
 
 
-/*
- *restful api to delete rsvp
- */
-router.delete('/:id', checkAuth, rsvpControllers.delete_rsvp);
+// /**
+//  * GET single rsvp
+//  */
+// router.get('/:id', rsvpControllers.get_rsvp);
 
-module.exports = router;
+
+// /*
+//  *restful api to delete rsvp
+//  */
+// router.delete('/:id', rsvpControllers.delete_rsvp);
+
+// module.exports = router;
