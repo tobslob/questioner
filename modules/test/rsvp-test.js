@@ -1,21 +1,8 @@
-process.env.NODE_ENV === 'test';
 import chai from 'chai';
 import request from 'supertest';
-import {app, connect, close} from '../../app';
+import app from '../../app';
 
 const { expect } = chai;
-
-before((done) => {
-    connect()
-        .then(() => done())
-        .catch((err) => done(err));
-});
-
-after((done) => {
-    close()
-        .then(() => done())
-        .catch((err) => done(err));
-});
 
 
 /**
@@ -26,7 +13,7 @@ describe('/testing of rsvp module', () => {
         it('should post rsvp succesfully', (done) => {
             request(app)
                 .post('/api/v1/rsvp')
-                .send({ response: 'yes'||'maybe'||'no', meetup: '5c77ad6c60dd92011cb893a3' })
+                .send({ response: 'yes', meetup: '5c77ad6c60dd92011cb893a3' })
                 .then((res) => {
                     const body = res.body;
                     expect(res.status).be.equal(201);
