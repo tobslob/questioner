@@ -28,12 +28,13 @@ exports.post_question = async (req, res) => {
     const { error } = validateQuest(req.body);
     if (error) return res.status(422).json({ message: error.details[0].message });
     const text = `INSERT INTO 
-    questions(id, title, votes, body, createdOn) 
-    VALUES($1, $2, $3, $4, $5) 
+    questions(id, title, meetupId, votes, body, createdOn) 
+    VALUES($1, $2, $3, $4, $5, $6) 
     returning *`;
     const values = [
         uuidv4(),
         req.body.title,
+        req.params.meetupId,
         0,
         req.body.body,
         moment(new Date())
@@ -99,36 +100,61 @@ exports.get_question = async (req, res) => {
 };
 
 exports.upvote_question = async (req, res) => {
-    const findOneQuery = 'SELECT * FROM questions WHERE id=$1';
-    const updateOneQuery =`UPDATE questions
-    SET votes = total + 1
-      returning *`;
+    const text = `INSERT INTO 
+    votes(id, questionId, userId, no_votes, createdOn) 
+    VALUES($1, $2, $3, $4, $5) 
+    returning *`;
+    const values = [
+        uuidv4(),
+        req.params.questionId,
+        req.params.userId,
+        0,
+        moment(new Date())
+    ];
     try {
-        const { rows } = await db.query(findOneQuery, [req.params.id]);
-        if(!rows[0]) {
-            return res.status(404).json({'message': 'question not found'});
-        }
-
-        const response = await db.query(updateOneQuery);
-        return res.status(200).json(response.rows[0]);
-    } catch(err) {
-        return res.status(400).send(err);
+        const { rows } = await db.query(text, values);
+        return res.status(201).json({
+            message: 'vote successful',
+            votes: rows[0],
+            request: {
+                type: 'GET',
+                url: 'http://localhost:3000/api/v1/upvote/' + rows[0].id 
+            }
+        });
+    } catch (err) {
+        return res.status(400).json({
+            error: console.error(err)});
     }
 };
 
 
-exports.downvote_question = (req, res) => {
-    const id = req.params.questionId;
-    Question.updateOne({_id: id}, {$inc: { votes: -1}})
-        .exec()
-        .then(() =>{
-            res.status(200).json({
-                message: 'downvote successful',
-                request: {
-                    type: 'GET',
-                    url: 'http://localhost:3000/api/v1/question/' + id
-                }
-            });
-        })
-        .catch((err) => res.status(500).json(err));
+exports.downvote_question = async (req, res) => {
+    const text = `INSERT INTO 
+    votes(id, questionId, userId, no_votes, createdOn) 
+    VALUES($1, $2, $3, $4, $5) 
+    returning *`;
+    const votes =`UPDATE votes
+    SET no_votes = total - 1
+      returning *`;
+    const values = [
+        uuidv4(),
+        req.params.questionId,
+        req.params.userId,
+        votes,
+        moment(new Date())
+    ];
+    try {
+        const { rows } = await db.query(text, values);
+        return res.status(201).json({
+            message: 'vote successfully',
+            votes: rows[0],
+            request: {
+                type: 'GET',
+                url: 'http://localhost:3000/api/v1/downvote/' + rows[0].id 
+            }
+        });
+    } catch (err) {
+        return res.status(400).json({
+            error: console.error(err)});
+    }
 };

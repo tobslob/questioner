@@ -37,9 +37,10 @@ const createTables = () => {
         questions(
             id UUID PRIMARY KEY,
             title VARCHAR(128) UNIQUE NOT NULL,
-            votes INT NOT NULL,
+            meetupId UUID,
+            votes INT,
             body TEXT NOT NULL,
-            createdOn TIMESTAMPTZ DEFAULT Now()
+            createdOn TIMESTAMPTZ
         )`;
     pool.query(questionTable)
         .catch((err) => {
@@ -50,7 +51,8 @@ const createTables = () => {
     const rsvpTable = `CREATE TABLE IF NOT EXISTS 
     rsvps(
         id UUID PRIMARY KEY,
-        meetup VARCHAR(128) NOT NULL,
+        meetupId UUID UNIQUE,
+        userId UUID,
         response VARCHAR(128) NOT NULL,
         date TIMESTAMPTZ DEFAULT Now()
         )`;
@@ -69,12 +71,74 @@ const createTables = () => {
             otherName VARCHAR(128) NOT NULL,
             email VARCHAR(128) UNIQUE NOT NULL,
             password VARCHAR(128) NOT NULL,
-            userName VARCHAR(128) NOT NULL,
+            userName VARCHAR(128) UNIQUE NOT NULL,
             phoneNumber VARCHAR(128) NOT NULL,
             isAdmin VARCHAR(128) NOT NULL,
             createdOn TIMESTAMPTZ DEFAULT Now()
         )`;
     pool.query(userTable)
+        .catch((err) => {
+            console.log(err);
+            pool.end();
+        });
+
+    const votes = `CREATE TABLE IF NOT EXISTS 
+        votes(
+            id UUID PRIMARY KEY,
+            questionId UUID UNIQUE,
+            userId UUID,
+            no_votes INT DEFAULT 0,
+            createdOn TIMESTAMPTZ
+        )`;
+    pool.query(votes)
+        .catch((err) => {
+            console.log(err);
+            pool.end();
+        });
+    const alterQuestion = `ALTER TABLE questions
+        ADD CONSTRAINT fk_questions_meetups FOREIGN KEY (meetupId) REFERENCES meetups (id) ON DELETE CASCADE`;
+    pool.query(alterQuestion)
+        .catch((err) => {
+            console.log(err);
+            pool.end();
+        });
+    
+    const alterQuestion1 = `ALTER TABLE questions
+        ADD CONSTRAINT fk_questions_votes FOREIGN KEY (votes) REFERENCES votes (no_votes) ON DELETE CASCADE`;
+    pool.query(alterQuestion1)
+        .catch((err) => {
+            console.log(err);
+            pool.end();
+        });
+        
+    const alterRsvp = `ALTER TABLE rsvps
+        ADD CONSTRAINT fk_rsvps_meetups FOREIGN KEY (meetupId) REFERENCES meetups (id) ON DELETE CASCADE`;
+    pool.query(alterRsvp)
+        .catch((err) => {
+            console.log(err);
+            pool.end();
+        });
+    
+    const alterRsvp1 = `ALTER TABLE rsvps
+        ADD CONSTRAINT fk_rsvps_users FOREIGN KEY (userId) REFERENCES users (id) ON DELETE CASCADE`;
+    pool.query(alterRsvp1)
+        .catch((err) => {
+            console.log(err);
+            pool.end();
+        });
+        
+        
+    const alterVotes = `ALTER TABLE votes
+        ADD CONSTRAINT fk_votes_questions FOREIGN KEY (questionId) REFERENCES questions (id) ON DELETE CASCADE`;
+    pool.query(alterVotes)
+        .catch((err) => {
+            console.log(err);
+            pool.end();
+        });
+    
+    const alterVotes1 = `ALTER TABLE votes
+        ADD CONSTRAINT fk_votes_users FOREIGN KEY (userId) REFERENCES users (id) ON DELETE CASCADE`;
+    pool.query(alterVotes1)
         .catch((err) => {
             console.log(err);
             pool.end();
