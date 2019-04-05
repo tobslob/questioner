@@ -7,7 +7,7 @@ const router = express.Router();
 router.use(express.static(path.join(__dirname, '../UI')));
 
 router.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../UI', 'index.html'));
+    res.sendFile(path.join(__dirname, '../UI', './index.html'));
 });
 
 router.get('/login', (req, res) => {

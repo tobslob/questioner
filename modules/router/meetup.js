@@ -1,5 +1,5 @@
 import express from 'express';
-// import checkAuth from '../middleware/check-auth';
+import checkAuth from '../middleware/check-auth';
 import meetupControllers from '../controllers/meetup';
 import multer from 'multer';
 
@@ -33,29 +33,29 @@ const upload = multer({
 /**
  *api to create meetup
 */
-router.post('/', upload.single('meetupImage'), meetupControllers.post_meetup);
+router.post('/', checkAuth, upload.single('meetupImage'), meetupControllers.post_meetup);
 
 /*
 *api to get all meetup post
 */
-router.get('/', meetupControllers.get_all_meetup);
+router.get('/', checkAuth, meetupControllers.get_all_meetup);
 
 
 /*
  * api to get specific meetup
  */
-router.get('/:id', meetupControllers.get_meetup);
+router.get('/:id', checkAuth, meetupControllers.get_meetup);
 
 
 /*
  * An API endpoint to edit meetup post
  */
-router.patch('/:id', meetupControllers.patch_meetup);
+router.patch('/:id', checkAuth, upload.single('meetupImage'), meetupControllers.patch_meetup);
 
 
 /*
  *restful api to delete meetup
  */
-router.delete('/:id', meetupControllers.delete_meetup);
+router.delete('/:id', checkAuth, meetupControllers.delete_meetup);
 
 module.exports = router;

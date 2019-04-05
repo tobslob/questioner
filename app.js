@@ -1,12 +1,13 @@
 /* eslint-disable no-console */
+import 'idempotent-babel-polyfill';
 import http from 'http';
 import express from 'express';
 import morgan from 'morgan';
 import coreRouter from './modules/router/core';
 import meetupRouter from './modules/router/meetup';
 import questionRouter from './modules/router/question';
-// import rsvpRouter from './modules/router/rsvp';
-// import userRouter from './modules/router/user';
+import rsvpRouter from './modules/router/rsvp';
+import userRouter from './modules/router/user';
 import bodyparser from 'body-parser';
 
 const app = express();
@@ -33,8 +34,8 @@ app.use((req, res, next) =>{
 app.use(coreRouter);
 app.use('/api/v1/meetup', meetupRouter);
 app.use('/api/v1/question', questionRouter);
-// app.use('/api/v1/rsvp', rsvpRouter);
-// app.use('/api/v1/user', userRouter);
+app.use('/api/v1/rsvps', rsvpRouter);
+app.use('/api/v1/user', userRouter);
 
 
 app.use((req, res) =>{

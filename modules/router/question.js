@@ -1,6 +1,6 @@
 import express from 'express';
 import questionControllers from '../controllers/question';
-// import checkAuth from '../middleware/check-auth';
+import checkAuth from '../middleware/check-auth';
 
 
 const router = express.Router();
@@ -9,28 +9,28 @@ const router = express.Router();
 /**
  * users api to create question/comment
  */
-router.post('/', questionControllers.post_question);
+router.post('/:meetupId', checkAuth, questionControllers.post_question);
 
 /**
  * GET question api
  */
-router.get('/', questionControllers.get_all_questions);
+router.get('/', checkAuth, questionControllers.get_all_questions);
 
 /**
  * Get a single question
  */
-router.get('/:id', questionControllers.get_question);
+router.get('/:id', checkAuth, questionControllers.get_question);
 
 /**
  * upvote question api
  */
-router.patch('/:questionId/upvote', questionControllers.upvote_question);
+router.post('/:questionId/:userId/upvote', checkAuth, questionControllers.upvote_question);
 
 
 /**
  * downvote question api
  */
-router.patch('/:questionId/downvote', questionControllers.downvote_question);
+router.post('/:questionId/downvote', checkAuth, questionControllers.downvote_question);
 
 
 module.exports = router;

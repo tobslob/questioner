@@ -1,269 +1,236 @@
-// import Joi from 'joi';
-// import bcrypt from 'bcrypt';
-// import jwt from 'jsonwebtoken';
-// import config from '../../config';
-// import pg from 'pg';
+/* eslint-disable no-console */
+import Joi from 'joi';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import moment from 'moment';
+import uuidv4 from 'uuid/v4';
+import db from './db';
+import dotenv from 'dotenv';
 
-// const configuration = {
-//     user: 'postgres',
-//     host: 'localhost',
-//     port: 5432,
-//     database: 'questiondb',
-//     password: 'Kazeem27',
-// };
-
-// const pool = new pg.Pool(configuration);
-
-// pool.on('connect', () => {
-//     // eslint-disable-next-line no-console
-//     console.log('connected');
-// });
+dotenv.config();
 
 
-// /**
-//  *Validator params
-//  * @param {} post
-//  */
-// const validateUser = (user) => {
-//     const schema = Joi.object().keys({
-//         firstName: Joi.string().trim().required(),
-//         lastName: Joi.string().trim().required(),
-//         otherName: Joi.string().trim().required(),
-//         email: Joi.string().email().trim().required(),
-//         password: Joi.string().alphanum().min(8).max(10).trim().required(),
-//         phoneNumber: Joi.string().trim().required(),
-//         userName: Joi.string().trim().required()
-//     });
-//     return Joi.validate(user, schema);
-// };
+/**
+ *Validator params
+ * @param {*} post validator
+ */
+const validateUser = (user) => {
+    const schema = Joi.object().keys({
+        firstName: Joi.string().trim().required(),
+        lastName: Joi.string().trim().required(),
+        otherName: Joi.string().trim().required(),
+        email: Joi.string().email().trim().required(),
+        password: Joi.string().min(8).max(20).trim().required(),
+        phoneNumber: Joi.string().trim().required(),
+        userName: Joi.string().trim().required(),
+        isAdmin: Joi.string().trim(),
+        userImage: Joi.any().required(),
+        createdOn: Joi.date().required()
+    });
+    return Joi.validate(user, schema);
+};
 
-// exports.post_user = (req, res) => {
-//     const {error} = validateUser(req.body);
-//     if (error) return res.status(422).json({ message: error.details[0].message });
-//     if (!req.file) return res.send('Please upload a file');
-//     bcrypt.hash(req.body.password, 10, (err, hash) => {
-//         if (err) {
-//             res.status(500).json({
-//                 message: 'retype password',
-//                 error: err
-//             });
-//         } else {
-//             const user = new User({
-//                 _id: new mongoose.Types.ObjectId(),
-//                 firstName: req.body.firstName,
-//                 lastName: req.body.lastName,
-//                 otherName: req.body.otherName,
-//                 email: req.body.email,
-//                 phoneNumber: req.body.phoneNumber,
-//                 userName: req.body.userName,
-//                 password: hash,
-//                 userImage: req.file.path,
-//             });
-//             user.save()
-//                 .then((result) => {
-//                     res.status(201).json({
-//                         message: 'User created',
-//                         User: {
-//                             userImage: result.userImage,
-//                             firstname: result.firstName,
-//                             lastname: result.lastName,
-//                             othername: result.otherName,
-//                             email: result.email,
-//                             phoneNumber: result.phoneNumber,
-//                             username: result.username,
-//                             password: result.password,
-//                             createdOn: result.createdOn,
-//                             isAdmin: result.isAdmin,
-//                             request: {
-//                                 type: 'GET',
-//                                 url: 'http://localhost:3000/api/v1/user/' + result._id
-//                             }
-//                         }
-//                     });
-//                 })
-//                 .catch((err) => {
-//                     res.status(422).json(err);
-//                 }); 
-//         }
-//     });
+/**
+ * Create A user
+ * @param {object} req 
+ * @param {object} res
+ * @returns {object} user object 
+ */
+exports.post_user = (req, res) => {
+    const {error} = validateUser(req.body);
+    if (error) return res.status(422).json({ message: error.details[0].message });
+    if (!req.file) return res.send('Please upload a file');
+    bcrypt.hash(req.body.password, 10, async (err, hash) => {
+        if (err) {
+            res.status(500).json({
+                message: 'retype password',
+                error: err
+            });
+        } else {
+            const text = `INSERT INTO 
+    users(id, firstName, lastName, otherName, email, phoneNumber, userName, isAdmin, password, userImage, createdOn) 
+    VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) 
+    returning *`;
+            const values = [
+                uuidv4(),
+                req.body.firstName,
+                req.body.lastName,
+                req.body.otherName,
+                req.body.email,
+                req.body.phoneNumber,
+                req.body.userName,
+                req.body.isAdmin,
+                hash,
+                req.file.path,
+                moment(new Date())
+            ];
+            try {
+                const { rows } = await db.query(text, values);
+                const token = jwt.sign({
+                    email: rows[0].email,
+                    userId: rows[0].id
+                }, process.env.SECRET,
+                {
+                    expiresIn: '24h'
+                });
+                return res.status(201).json({
+                    message: 'user created successfully',
+                    users: rows[0],
+                    token: token,
+                    request: {
+                        type: 'GET',
+                        url: 'http://localhost:3000/api/v1/user/' + rows[0].id
+                    }
+                });
+            } catch (err) {
+                return res.status(400).json({
+                    message: 'an error occur',
+                    error: console.error(err)
+                });
+            }
+        }
+    });
+    return res;
+};
 
-    
-// };
+/**
+ * Login A user
+ * @param {object} req 
+ * @param {object} res
+ * @returns {object} user object 
+ */
+exports.login_router = async (req, res) => {
+    const text = 'SELECT * FROM users WHERE email = $1';
+    try {
+        const { rows } = await db.query(text, [req.body.email]);
+        if (!rows[0]) {
+            return res.status(401).json({ 'message': 'Authentication failed1' });
+        }
+        bcrypt.compare(req.body.password, rows[0].password, (err, result) => {
+            if (err) {
+                return res.status(401).json({
+                    message: 'Authentication failed2'
+                });
+            }
+            if (result) {
+                const token = jwt.sign({
+                    email: rows[0].email,
+                    userId: rows[0].id
+                }, process.env.SECRET,
+                {
+                    expiresIn: '1h'
+                });
+                return res.status(200).json({
+                    message: 'Authentication successful',
+                    token: token
+                });
+            }
+        });
+    } catch (error) {
+        return res.status(401).send(console.error(error));
+    }
+};
 
+/**
+ * GET all user
+ * @param {object} req 
+ * @param {object} res
+ * @returns {object} user object 
+ */
+exports.get_users = async (req, res) => {
+    const findAllQuery = 'SELECT * FROM users';
+    try {
+        const { rows, rowCount } = await db.query(findAllQuery);
+        return res.status(200).json({
+            message: 'users retrieve successfully',
+            users: { rows, rowCount }
+        });
+    } catch(error) {
+        return res.status(400).send(error);
+    }
+};
 
-// exports.login_router = (req, res) => {
-//     User.find({ email: req.body.email })
-//         .exec()
-//         .then(user => {
-//             if (user.length < 1) {
-//                 return res.status(401).json({
-//                     message: 'Authentication failed!'
-//                 });
-//             }
-//             bcrypt.compare(req.body.password, user[0].password, (err, result) => {
-//                 if (err) {
-//                     return res.status(401).json({
-//                         message: 'Incorrect logins'
-//                     });
-//                 }
-//                 if (result) {
-//                     const token = jwt.sign({
-//                         email: user[0].email,
-//                         userId: user[0]._id
-//                     }, config.secret, 
-//                     {
-//                         expiresIn: '1h'
-//                     });
-//                     return res.status(200).json({
-//                         message: 'Authentication successful',
-//                         token: token
-//                     });
-//                 }
-//                 res.status(401).json({
-//                     mesaage: 'Authentication failed!'
-//                 });
-//             });
-//         })
-//         .catch((err) => {
-//             res.status(422).json({
-//                 error: err
-//             });
-//         });
-// };
+/**
+ * GET A user
+ * @param {object} req 
+ * @param {object} res
+ * @returns {object} user object 
+ */
+exports.get_user = async (req, res) => {
+    const text = 'SELECT * FROM users WHERE id = $1';
+    try {
+        const { rows } = await db.query(text, [req.params.id]);
+        if (!rows[0]) {
+            return res.status(404).json({'message': 'user not found'});
+        }
+        return res.status(200).json({
+            message: `users with id:${rows[0].id} retrieve successfully`,
+            meetups: rows[0]
+        });
+    } catch(error) {
+        return res.status(400).send(error);
+    }
+};
 
+/**
+ * PATCH A user
+ * @param {object} req 
+ * @param {object} res
+ * @returns {object} user object 
+ */
+exports.patch_user = async (req, res) => {
+    if (!req.file) return res.send('Please upload a file');
+    const findOneQuery = 'SELECT * FROM users WHERE id=$1';
+    const updateOneQuery =`UPDATE users
+      SET firstName=$1, lastName=$2, otherName=$3, phoneNumber=$4, password=$5, userImage=$6
+      WHERE id=$7 returning *`;
+    bcrypt.hash(req.body.password, 10, async (err, hash) => {
+        if (err) {
+            res.status(500).json({
+                message: 'retype password',
+                error: err
+            });
+        } else {
+            try {
+                const { rows } = await db.query(findOneQuery, [req.params.id]);
+                if (!rows[0]) {
+                    return res.status(404).json({ 'message': 'user not found' });
+                }
+                const values = [
+                    req.body.firstName,
+                    req.body.lastName,
+                    req.body.otherName,
+                    req.body.phoneNumber,
+                    hash,
+                    req.file.path,
+                    req.params.id
+                ];
+                const response = await db.query(updateOneQuery, values);
+                return res.status(200).json(response.rows[0]);
+            } catch (err) {
+                return res.status(400).send({
+                    error: console.log(err)
+                });
+            }
+        }
+    });
+};
 
-// exports.get_users = (req, res) => {
-//     User.find()
-//         .exec()
-//         .then((result) => {
-//             const response = {
-//                 count: result.length,
-//                 user: result.map(result => {
-//                     return {
-//                         _id: result._id,
-//                         firstName: result.firstName,
-//                         lastName: result.lastName,
-//                         otherName: result.otherName,
-//                         email: result.email,
-//                         phoneNumber: result.phoneNumber,
-//                         userName: result.userName,
-//                         createdOn: result.createdOn,
-//                         isAdmin: result.isAdmin,
-//                         userImage: result.userImage,
-//                         password: result.password,
-//                         request: {
-//                             type: 'GET',
-//                             url: 'http://localhost:3000/api/v1/user/' + result._id
-//                         }
-//                     };
-//                 })
-
-//             };
-//             res.status(200).json(response); 
-//         })
-//         .catch((err) => {
-//             res.status(500).json({
-//                 message: 'an error occur',
-//                 error: err
-//             });
-//         });
-// };
-
-
-// exports.get_user = (req, res) => {
-//     const id = req.params.id;
-//     User.findById(id)
-//         .exec()
-//         .then(doc=>{
-//             res.status(200).json({
-//                 Meetup: doc,
-//                 request: {
-//                     type: 'GET',
-//                     url: 'http://localhost:3000/api/v1/user'
-//                 }
-//             });
-//         })
-//         .catch((err) => {
-//             res.status(500).json({
-//                 message: 'an error occur',
-//                 error: err
-//             });
-//         });
-// };
-
-
-// exports.patch_user = (req, res) => {
-//     const id = req.params.id;
-//     const updateOps = {};
-//     for (const ops of req.body) {
-//         if (ops.propName == 'password') {
-//             bcrypt.hash(ops.value, 10, (err, hash) => {
-//                 if (err) {
-//                     res.status(500).json({
-//                         message: 'retype password',
-//                         error: err
-//                     });
-//                 }
-//                 else {
-//                     updateOps[ops.propName] = hash;
-//                     User.updateOne({ _id: id }, { $set: updateOps })
-//                         .exec()
-//                         .then( ()=> {
-//                             return res.status(200).json({
-//                                 message: 'Successfully updated',
-//                                 request: {
-//                                     type: 'GET',
-//                                     url: 'http://localhost:3000/api/v1/user/' + id
-//                                 }
-//                             });
-//                         })
-//                         .catch(err=>{
-//                             return res.status(500).json({
-//                                 error: err
-//                             });
-//                         });
-//                 }
-//             });
-//         } else {
-//             updateOps[ops.propName] = ops.value;
-//             User.updateOne({ _id: id }, { $set: updateOps })
-//                 .exec()
-//                 .then( ()=> {
-//                     return res.status(200).json({
-//                         message: 'Successfully updated',
-//                         request: {
-//                             type: 'GET',
-//                             url: 'http://localhost:3000/api/v1/user/' + id
-//                         }
-//                     });
-//                 })
-//                 .catch(err=>{
-//                     return res.status(500).json({
-//                         error: err
-//                     });
-//                 });
-//         }
-//     }
-    
-// };
-
-
-// exports.delete_user = (req, res) => {
-//     const id = req.params.id;
-//     User.deleteOne({ _id: id })
-//         .exec()
-//         .then(() => {
-//             return res.status(200).json({
-//                 message: `the user with ID:${id} has successfully been deleted`,
-//                 request: {
-//                     type: 'GET',
-//                     url: 'http://localhost:3000/api/v1/user'
-//                 }
-//             });
-//         })
-//         .catch(err => {
-//             return res.status(500).json({
-//                 error: err
-//             });
-//         });
-// };
+/**
+ * DELETE A user
+ * @param {object} req 
+ * @param {object} res
+ * @returns {object} user object 
+ */
+exports.delete_user = async (req, res) => {
+    const deleteQuery = 'DELETE FROM users WHERE id=$1 returning *';
+    try {
+        const { rows } = await db.query(deleteQuery, [req.params.id]);
+        if(!rows[0]) {
+            return res.status(404).send({'message': 'useer not found'});
+        }
+        return res.status(200).send({ 'message': 'deleted' });
+    } catch(error) {
+        return res.status(400).send(error);
+    }
+};

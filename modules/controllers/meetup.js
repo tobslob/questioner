@@ -18,10 +18,10 @@ const validatePost = (post) => {
 
 
 /**
- * Create A Reflection
+ * Create A meetup
  * @param {object} req 
  * @param {object} res
- * @returns {object} reflection object 
+ * @returns {object} meetup object 
  */
 exports.post_meetup = async (req, res) => {
     const {
@@ -115,7 +115,7 @@ exports.get_meetup = async (req, res) => {
 exports.patch_meetup = async (req, res) => {
     const findOneQuery = 'SELECT * FROM meetups WHERE id=$1';
     const updateOneQuery =`UPDATE meetups
-      SET topic=$1, location=$2, body=$3, happeningOn=$4, Tags=$5, meetupImage=$6, createdOn=$7
+      SET topic=$1, location=$2, body=$3, happeningon=$4, tags=$5, meetupimage=$6, createdon=$7
       WHERE id=$8 returning *`;
     try {
         const { rows } = await db.query(findOneQuery, [req.params.id]);
@@ -135,7 +135,9 @@ exports.patch_meetup = async (req, res) => {
         const response = await db.query(updateOneQuery, values);
         return res.status(200).json(response.rows[0]);
     } catch(err) {
-        return res.status(400).send(err);
+        return res.status(400).send({
+            error: console.log(err)
+        });
     }
 };
 

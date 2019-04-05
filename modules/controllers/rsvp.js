@@ -1,118 +1,115 @@
-// import Joi from 'joi';
-// import Rsvp from '../models/rsvp';
-// import mongoose from 'mongoose';
+/* eslint-disable no-console */
+import Joi from 'joi';
+import moment from 'moment';
+import uuidv4 from 'uuid/v4';
+import db from './db';
 
-// /**
-//  *Validator params
-//  * @param {} post
-//  */
-// const validatePost = (rsvp) => {
-//     const schema = Joi.object().keys({
-//         meetup: Joi.string().trim().required(),
-//         response: Joi.string().trim().insensitive().valid('yes', 'no', 'maybe')
-//     });
-//     return Joi.validate(rsvp, schema);
-// };
+/**
+ *Validator params
+ * @param {} post
+ */
+const validatePost = (rsvp) => {
+    const schema = Joi.object().keys({
+        response: Joi.string().trim().insensitive().valid('yes', 'no', 'maybe')
+    });
+    return Joi.validate(rsvp, schema);
+};
 
+/**
+   * POST rsvp
+   * @param {object} req 
+   * @param {object} res 
+   * @returns {object} rsvp
+   */
+exports.post_rsvp = async (req, res) => {
+    const { error } = validatePost(req.body);
+    if (error) return res.status(422).json({ message: error.details[0].message });
 
-// exports.post_rsvp = (req, res) => {
-//     const { error } = validatePost(req.body);
-//     if (error) return res.status(422).json({ message: error.details[0].message });
-    
-//     const rsvp = new Rsvp({
-//         _id: new mongoose.Types.ObjectId(),
-//         meetup: req.body.meetup,
-//         response: req.body.response,
-//     });
-//     rsvp
-//         .save()
-//         .then((result) => {
-//             res.status(201).json({
-//                 message: 'Created rsvp successfully',
-//                 createdRsvp: {
-//                     _id:result._id,
-//                     meetup: result.meetup,
-//                     response: result.response,
-//                     request: {
-//                         type: 'GET',
-//                         url: 'http://localhost:3000/api/v1/rsvp/' + result._id
-//                     }
-//                 }
-//             });
-//         })
-//         .catch( err => {
-//             return res.status(422).json(err);
-//         });
-// };
+    const text = `INSERT INTO
+    rsvps(id, meetupId, userId, response, date)
+    VALUES($1, $2, $3, $4, $5)
+    returning *`;
+    const values = [
+        uuidv4(),
+        req.params.meetupId,
+        req.params.userId,
+        req.body.response,
+        moment(new Date())
+    ];
+    try {
+        const { rows } = await db.query(text, values);
+        return res.status(201).json({
+            message: 'rsvp registered successfully',
+            questions: rows[0],
+            request: {
+                type: 'GET',
+                url: 'http://localhost:3000/api/v1/rsvps/' + rows[0].id
+            }
+        });
+    } catch (error) {
+        return res.status(400).json({
+            message: console.log(error)
+        });
+    }
+};
 
-
-// exports.get_all_rsvp = (req, res) => {
-//     Rsvp.find()
-//         .populate('meetup','topic')
-//         .exec()
-//         .then((results) => {
-//             const response = {
-//                 count: results.length,
-//                 Rsvp: results.map(result => {
-//                     return {
-//                         _id:result._id,
-//                         meetup: result.meetup,
-//                         response: result.response,
-//                         request: {
-//                             type: 'GET',
-//                             url: 'http://localhost:3000/api/v1/rsvp/' + result._id
-//                         }
-//                     };
-//                 })
-//             };
-//             res.status(200).json(response);
-//         })
-//         .catch((err) => {
-//             res.status(500).json(err);
-//         });
-// };
-
-// exports.get_rsvp = (req, res) => {
-//     const id = req.params.id;
-//     Rsvp.findById(id)
-//         .populate('meetup')
-//         .exec()
-//         .then((result) => {
-//             const response = {
-//                 Rsvp: {
-//                     _id:result._id,
-//                     meetup: result.meetup,
-//                     response: result.response,
-//                     request: {
-//                         type: 'GET',
-//                         url: 'http://localhost:3000/api/v1/rsvp/' + result._id
-//                     }
-//                 }
-//             };
-//             res.status(200).json(response);
-//         })
-//         .catch((err) => {
-//             res.status(500).json(err);
-//         });
-// };
+/**
+   * Get All RSVP
+   * @param {object} req 
+   * @param {object} res 
+   * @returns {object} RSVP Object
+   */
+exports.get_all_rsvp = async (req, res) => {
+    const findAllQuery = 'SELECT * FROM rsvps';
+    try {
+        const { rows, rowCount } = await db.query(findAllQuery);
+        return res.status(200).json({
+            message: 'rsvp retrieve successfully',
+            questions: { rows, rowCount }
+        });
+    } catch(error) {
+        return res.status(400).send(error);
+    }  
+};
 
 
-// exports.delete_rsvp = (req, res) => {
-//     const id = req.params.id;
-//     Rsvp.deleteOne({ _id: id })
-//         .exec()
-//         .then(() => {
-//             return res.status(200).json({
-//                 message: `the rsvp with ID:${id} has successfully been deleted`,
-//                 request: {
-//                     type: 'GET',
-//                     url: 'http://localhost:3000/api/v1/rsvp/'
-//                 }
-//             });
-//         })
-//         .catch(err => {
-//             return res.status(500).json({
-//                 error: err
-//             });
-//         });
-// };
+/**
+   * Get A rsvp
+   * @param {object} req 
+   * @param {object} res 
+   */
+exports.get_rsvp = async (req, res) => {
+    const findOneQuery = 'SELECT * FROM rsvps where id=$1';
+
+    try {
+        const { rows } = await db.query(findOneQuery, [req.params.id]);
+        if (!rows[0]) {
+            res.status(404).send({});
+        }
+        return res.status(200).json({
+            message: 'rsvp retrieve successfully',
+            questions: rows
+        });
+    } catch(error) {
+        return res.status(400).send(error);
+    }   
+};
+
+/**
+   * DELETE A RSVP
+   * @param {object} req 
+   * @param {object} res 
+   * @returns {object} RSVP
+   */
+exports.delete_rsvp = async (req, res) => {
+    const deleteQuery = 'DELETE FROM rsvps WHERE id=$1 returning *';
+    try {
+        const { rows } = await db.query(deleteQuery, [req.params.id]);
+        if(!rows[0]) {
+            return res.status(404).send({'message': 'rsvp not found'});
+        }
+        return res.status(200).send({ 'message': 'deleted' });
+    } catch(error) {
+        return res.status(400).send(error);
+    }
+};
