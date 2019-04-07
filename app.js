@@ -37,7 +37,7 @@ app.use('/api/v1/question', questionRouter);
 app.use('/api/v1/rsvps', rsvpRouter);
 app.use('/api/v1/user', userRouter);
 
-
+// handling 404 route request
 app.use((req, res) =>{
     return res.status(400).json({
         error: {

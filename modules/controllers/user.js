@@ -24,8 +24,7 @@ const validateUser = (user) => {
         phoneNumber: Joi.string().trim().required(),
         userName: Joi.string().trim().required(),
         isAdmin: Joi.string().trim(),
-        userImage: Joi.any().required(),
-        createdOn: Joi.date().required()
+        userImage: Joi.any()
     });
     return Joi.validate(user, schema);
 };
@@ -73,14 +72,10 @@ exports.post_user = (req, res) => {
                 {
                     expiresIn: '24h'
                 });
-                return res.status(201).json({
+                return res.status(201).send({
                     message: 'user created successfully',
                     users: rows[0],
-                    token: token,
-                    request: {
-                        type: 'GET',
-                        url: 'http://localhost:3000/api/v1/user/' + rows[0].id
-                    }
+                    token: token
                 });
             } catch (err) {
                 return res.status(400).json({
@@ -89,8 +84,8 @@ exports.post_user = (req, res) => {
                 });
             }
         }
-    });
-    return res;
+    }); 
+    console.log(res.body);
 };
 
 /**
