@@ -2,7 +2,7 @@
 import Joi from 'joi';
 import moment from 'moment';
 import uuidv4 from 'uuid/v4';
-import db from './db';
+import db from './config/db';
 
 const validatePost = (post) => {
     const schema = Joi.object().keys({
@@ -10,8 +10,7 @@ const validatePost = (post) => {
         topic: Joi.string().trim().required(),
         body: Joi.string().trim().required(),
         happeningOn: Joi.date().required(),
-        Tags: Joi.array().items(Joi.string().trim()).required(),
-        meetupImage: Joi.string()
+        Tags: Joi.array().items(Joi.string().trim()).required()
     });
     return Joi.validate(post, schema);
 };
@@ -30,11 +29,10 @@ exports.post_meetup = async (req, res) => {
     if (error) return res.status(422).json({
         message: error.details[0].message
     });
-
-    if (!req.file) return res.status(422).json('Please upload a file');
+    
     const text = `INSERT INTO 
-    meetups(id, topic, location, body, happeningOn, Tags, meetupImage, createdOn) 
-    VALUES($1, $2, $3, $4, $5, $6, $7, $8) 
+    meetups(id, topic, location, body, happeningOn, Tags, createdOn) 
+    VALUES($1, $2, $3, $4, $5, $6, $7) 
     returning *`;
     const values = [
         uuidv4(),
@@ -43,7 +41,6 @@ exports.post_meetup = async (req, res) => {
         req.body.body,
         req.body.happeningOn,
         req.body.Tags,
-        req.file.path,
         moment(new Date())
     ];
     try {
@@ -115,8 +112,8 @@ exports.get_meetup = async (req, res) => {
 exports.patch_meetup = async (req, res) => {
     const findOneQuery = 'SELECT * FROM meetups WHERE id=$1';
     const updateOneQuery =`UPDATE meetups
-      SET topic=$1, location=$2, body=$3, happeningon=$4, tags=$5, meetupimage=$6, createdon=$7
-      WHERE id=$8 returning *`;
+      SET topic=$1, location=$2, body=$3, happeningon=$4, tags=$5, createdon=$6
+      WHERE id=$7 returning *`;
     try {
         const { rows } = await db.query(findOneQuery, [req.params.id]);
         if(!rows[0]) {
@@ -128,7 +125,6 @@ exports.patch_meetup = async (req, res) => {
             req.body.body,
             req.body.happeningOn,
             req.body.Tags,
-            req.file.path,
             moment(new Date()),
             req.params.id
         ];

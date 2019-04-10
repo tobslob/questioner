@@ -2,7 +2,7 @@
 import Joi from 'joi';
 import moment from 'moment';
 import uuidv4 from 'uuid/v4';
-import db from './db';
+import db from './config/db';
 
 /**
  *Validator params
@@ -40,11 +40,7 @@ exports.post_rsvp = async (req, res) => {
         const { rows } = await db.query(text, values);
         return res.status(201).json({
             message: 'rsvp registered successfully',
-            questions: rows[0],
-            request: {
-                type: 'GET',
-                url: 'http://localhost:3000/api/v1/rsvps/' + rows[0].id
-            }
+            rsvp: rows[0]
         });
     } catch (error) {
         return res.status(400).json({
@@ -65,7 +61,7 @@ exports.get_all_rsvp = async (req, res) => {
         const { rows, rowCount } = await db.query(findAllQuery);
         return res.status(200).json({
             message: 'rsvp retrieve successfully',
-            questions: { rows, rowCount }
+            rsvps: { rows, rowCount }
         });
     } catch(error) {
         return res.status(400).send(error);
@@ -84,11 +80,11 @@ exports.get_rsvp = async (req, res) => {
     try {
         const { rows } = await db.query(findOneQuery, [req.params.id]);
         if (!rows[0]) {
-            res.status(404).send({});
+            res.status(404).send({message: 'Rsvp not found'});
         }
         return res.status(200).json({
             message: 'rsvp retrieve successfully',
-            questions: rows
+            rsvp: rows
         });
     } catch(error) {
         return res.status(400).send(error);

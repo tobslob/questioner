@@ -30,7 +30,7 @@ router.post('/:questionId/:userId/upvote', checkAuth, questionControllers.upvote
 /**
  * downvote question api
  */
-router.post('/:questionId/downvote', checkAuth, questionControllers.downvote_question);
+router.post('/:questionId/:userId/downvote', checkAuth, questionControllers.downvote_question);
 
 
 module.exports = router;
