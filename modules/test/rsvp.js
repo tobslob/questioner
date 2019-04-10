@@ -12,7 +12,7 @@ let rsvpId;
 describe('RSVP', () => {
     it('should post rsvp succesfully', (done) => {
         request(app)
-            .post(`/api/v1/rsvps/${meetupId}/1067849b-850a-4198-a60b-e8d49463fcc8`)
+            .post(`/api/v1/rsvps/${meetupId}/05f759df-96a5-4eb2-b3d4-35a9dcfe6df4`)
             .set('Authorization', 'Bearer '+token)
             .send({ response: 'yes' })
             .then((res) => {
