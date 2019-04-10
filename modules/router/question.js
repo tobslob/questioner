@@ -24,13 +24,13 @@ router.get('/:id', checkAuth, questionControllers.get_question);
 /**
  * upvote question api
  */
-router.post('/:questionId/:userId/upvote', checkAuth, questionControllers.upvote_question);
+router.post('/:questionId/upvote', checkAuth, questionControllers.upvote_question);
 
 
 /**
  * downvote question api
  */
-router.post('/:questionId/:userId/downvote', checkAuth, questionControllers.downvote_question);
+router.post('/:questionId/downvote', checkAuth, questionControllers.downvote_question);
 
 
 module.exports = router;

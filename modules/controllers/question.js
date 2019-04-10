@@ -95,27 +95,27 @@ exports.get_question = async (req, res) => {
     }
 };
 
+
+/**
+   * UpVote A question
+   * @param {object} req 
+   * @param {object} res
+   * @returns {object} queston object
+   */
 exports.upvote_question = async (req, res) => {
-    const text = `INSERT INTO 
-    votes(id, questionId, userId, no_votes, createdOn) 
-    VALUES($1, $2, $3, $4, $5) 
-    returning *`;
-    const values = [
-        uuidv4(),
-        req.params.questionId,
-        req.params.userId,
-        0,
-        moment(new Date())
-    ];
+    const text = 'UPDATE questions SET votes = votes + 1 WHERE id = $1 returning meetupId, title, body, votes';
+    const questionId = req.params.questionId;
     try {
-        const { rows } = await db.query(text, values);
+        const { rows } = await db.query(text, [questionId]);
+        if (!rows[0]) {
+            return res.status(404).json({
+                status: 404,
+                error: `No Question Record Found with id: ${questionId}`,
+            });
+        }
         return res.status(201).json({
             message: 'vote successful',
-            votes: rows[0],
-            request: {
-                type: 'GET',
-                url: 'http://localhost:3000/api/v1/upvote/' + rows[0].id 
-            }
+            votes: rows
         });
     } catch (err) {
         return res.status(400).json({
@@ -124,51 +124,26 @@ exports.upvote_question = async (req, res) => {
 };
 
 
+/**
+   * DownVote A question
+   * @param {object} req 
+   * @param {object} res
+   * @returns {object} queston object
+   */
 exports.downvote_question = async (req, res) => {
-
-
-    // the logics here looks a bit confusing 
-    // the below will inset a non existing row
-    const text = `INSERT INTO 
-    votes(id, questionId, userId, no_votes, createdOn) 
-    VALUES($1, $2, $3, $4, $5) 
-    returning *`;
-    //total--; you don't have any feld or var for total
-    // while the below is meant to update i, so something is wrong here 
-    // please show me what you have for the client or  web 
-    // i think i have break the UI
-    // the UI is not working as it should, i will fix that.
-    // SHoarry to cut you
-
-    // I believe you want to upvote an existing question. So parse the id os suct question 
-    // via request req.params.questionId, then use as where clause for your UPDATE Query on updateing
-    // However, if the approach is to store user detail then you only need to insert and dont need  the update query below
-    // Hence you can either get vote count from querying total row count. some functions like count() will work in 
-    // most sql. Otherwise you can have another table that store counts only 
-    // do your research on them.
-    // Fix your UI and let me know when you have 
-    //Alright I will fix it, and implement the statement.
-    //I will let you know, Thank you a lot!
-
-    const votes =`UPDATE votes
-    SET no_votes = '+total+'
-      returning *`;
-    const values = [
-        uuidv4(),
-        req.params.questionId,
-        req.params.userId,
-        votes,
-        moment(new Date())
-    ];
+    const text = 'UPDATE questions SET votes = votes - 1 WHERE id = $1 returning meetupId, title, body, votes';
+    const questionId = req.params.questionId;
     try {
-        const { rows } = await db.query(text, values);
+        const { rows } = await db.query(text, [questionId]);
+        if (!rows[0]) {
+            return res.status(404).json({
+                status: 404,
+                error: `No Question Record Found with id: ${questionId}`,
+            });
+        }
         return res.status(201).json({
-            message: 'vote successfully',
-            votes: rows[0],
-            request: {
-                type: 'GET',
-                url: 'http://localhost:3000/api/v1/downvote/' + rows[0].id 
-            }
+            message: 'vote successful',
+            votes: rows
         });
     } catch (err) {
         return res.status(400).json({

@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL
+    connectionString: process.env.TEST
 });
 
 pool.on('connect', () => {
@@ -36,7 +36,7 @@ const createTables = () => {
     const questionTable = `CREATE TABLE IF NOT EXISTS
         questions(
             id UUID PRIMARY KEY,
-            title VARCHAR(128) UNIQUE NOT NULL,
+            title VARCHAR(128) NOT NULL,
             meetupId UUID,
             votes INT,
             body TEXT NOT NULL,
@@ -81,31 +81,9 @@ const createTables = () => {
             console.log(err);
             pool.end();
         });
-
-    const votes = `CREATE TABLE IF NOT EXISTS 
-        votes(
-            id UUID PRIMARY KEY,
-            questionId UUID UNIQUE,
-            userId UUID,
-            no_votes INT DEFAULT 0,
-            createdOn TIMESTAMPTZ
-        )`;
-    pool.query(votes)
-        .catch((err) => {
-            console.log(err);
-            pool.end();
-        });
     const alterQuestion = `ALTER TABLE questions
         ADD CONSTRAINT fk_questions_meetups FOREIGN KEY (meetupId) REFERENCES meetups (id) ON DELETE CASCADE`;
     pool.query(alterQuestion)
-        .catch((err) => {
-            console.log(err);
-            pool.end();
-        });
-    
-    const alterQuestion1 = `ALTER TABLE questions
-        ADD CONSTRAINT fk_questions_votes FOREIGN KEY (votes) REFERENCES votes (no_votes) ON DELETE CASCADE`;
-    pool.query(alterQuestion1)
         .catch((err) => {
             console.log(err);
             pool.end();
@@ -122,23 +100,6 @@ const createTables = () => {
     const alterRsvp1 = `ALTER TABLE rsvps
         ADD CONSTRAINT fk_rsvps_users FOREIGN KEY (userId) REFERENCES users (id) ON DELETE CASCADE`;
     pool.query(alterRsvp1)
-        .catch((err) => {
-            console.log(err);
-            pool.end();
-        });
-        
-        
-    const alterVotes = `ALTER TABLE votes
-        ADD CONSTRAINT fk_votes_questions FOREIGN KEY (questionId) REFERENCES questions (id) ON DELETE CASCADE`;
-    pool.query(alterVotes)
-        .catch((err) => {
-            console.log(err);
-            pool.end();
-        });
-    
-    const alterVotes1 = `ALTER TABLE votes
-        ADD CONSTRAINT fk_votes_users FOREIGN KEY (userId) REFERENCES users (id) ON DELETE CASCADE`;
-    pool.query(alterVotes1)
         .catch((err) => {
             console.log(err);
             pool.end();
