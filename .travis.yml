@@ -1,16 +1,14 @@
 language: node_js
 node_js:
-  - "10.14.2"
-
-services:
-  - postgresql
+  - "10.15.1"
 
 cache:
-  directories: 
+  directories:
     - "node_modules"
 before_install:
   - "npm install"
-before_script:
-  - psql -c 'create database travis_ci_test;' -U postgres
+
+after_success:
+  - "npm run coverage"
 script:
   - "npm run test"
