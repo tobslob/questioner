@@ -1,67 +1,80 @@
-// import chai from 'chai';
-// import request from 'supertest';
-// import app from '../../app';
+process.env.NODE_ENV='test';
+import { expect } from 'chai';
+import request from 'supertest';
+import app from '../../app';
+import faker from 'faker';
+import { token } from './user';
+import { meetupId } from './meetup';
 
-// const { expect } = chai;
+let questionId;
 
+/**
+ * Endpoint unit tests for question api
+ */
+describe('QUESTION', () => {
+    it('should post question', (done) => {
+        request(app)
+            .post(`/api/v1/question/${meetupId}`)
+            .set('Authorization', 'Bearer '+token)
+            .send({
+                title: faker.lorem.word(10),
+                body: faker.lorem.text()
+            })
+            .then((res) => {
+                questionId = res.body.questions.id;
+                expect(res.status).to.equal(201);
+                expect(res.body).to.be.an('object');
+                expect(res.body).to.have.property('message').and.equal('question created successfully');
+                expect(res.body).to.have.property('questions').and.haveOwnProperty('id');
+                expect(res.body).to.have.property('questions').and.haveOwnProperty('title');
+                expect(res.body).to.have.property('questions').and.haveOwnProperty('meetupid');
+                expect(res.body).to.have.property('questions').and.haveOwnProperty('votes');
+                expect(res.body).to.have.property('questions').and.haveOwnProperty('body');
+                expect(res.body).to.have.property('questions').and.haveOwnProperty('createdon');
+                done();
+            })
+            .catch((err) => done(err));
+    });
+    it('should get all question', (done) => {
+        request(app)
+            .get('/api/v1/question/')
+            .set('Authorization', 'Bearer '+token)
+            .then((res) => {
+                expect(res.status).to.equal(200);
+                expect(res.body).to.be.an('object');
+                expect(res.body).to.have.property('message');
+                done();
+            })
+            .catch((err) => done(err));
+    });
+    it('should not get question if not found', (done) => {
+        request(app)
+            .get('/api/v1/question/8a732477-b083-450c-ac69-c0710f71d080')
+            .set('Authorization', 'Bearer '+token)
+            .then((res) => {
+                expect(res.status).to.equal(404);
+                expect(res.body).to.be.an('object');
+                expect(res.body).to.have.property('message');
+                done();
+            })
+            .catch((err) => done(err));
+    });
+    it('should get a question', (done) => {
+        request(app)
+            .get(`/api/v1/question/${questionId}`)
+            .set('Authorization', 'Bearer '+token)
+            .send({
+                title: faker.lorem.word(10),
+                body: faker.lorem.text()
+            })
+            .then((res) => {
+                expect(res.status).to.equal(200);
+                expect(res.body).to.be.an('object');
+                expect(res.body).to.have.property('message');
+                done();
+            })
+            .catch((err) => done(err));
+    });
+});
 
-// /**
-//  * Endpoint unit tests for question api
-//  */
-// describe('/POST question', () => {
-//     const data = {
-//         title: 'title',
-//         body: 'my test description',
-//     };
-//     it('should post question', (done) => {
-//         request(app)
-//             .post('/api/v1/question')
-//             .send(data)
-//             .then((res) => {
-//                 expect(res.status).to.equal(200);
-//                 expect(res.body).to.be.an('object');
-//                 expect(res.body).to.have.property('message').and.equal('Question successfully posted');
-//                 expect(res.body).to.have.property('createdQuestion').and.haveOwnProperty('_id');
-//                 expect(res.body).to.have.property('createdQuestion').and.haveOwnProperty('title');
-//                 expect(res.body).to.have.property('createdQuestion').and.haveOwnProperty('votes');
-//                 expect(res.body).to.have.property('createdQuestion').and.haveOwnProperty('body');
-//                 expect(res.body).to.have.property('createdQuestion').and.haveOwnProperty('createdOn');
-//                 expect(res.body).to.have.property('request').and.haveOwnProperty('type');
-//                 expect(res.body).to.have.property('request').and.haveOwnProperty('url');
-//                 done();
-//             })
-//             .catch((err) => done(err));
-//     });
-// });
-
-
-// /**
-//  * Endpoint unit tests for question upvote
-//  */
-// describe('PATCH /question upvote', () => {
-//     it('should successfully increase votes', (done) => {
-//         request(app)
-//             .patch('/api/v1/question/5c7542ad885502309cb63c27/upvote')
-//             .then((res) => {
-//                 expect(res.status).be.equal(200);
-//                 done();
-//             })
-//             .catch((err) => done(err));
-//     });
-// });
-
-
-// /**
-//  * Endpoint unit tests for question downvote
-//  */
-// describe('PATCH /question downvote', () => {
-//     it('should successfully decrease votes', (done) => {
-//         request(app)
-//             .patch('/api/v1/question/5c7542ad885502309cb63c27/downvote')
-//             .then((res) => {
-//                 expect(res.status).be.equal(200);
-//                 done();
-//             })
-//             .catch((err) => done(err));
-//     });
-// });
+export { questionId };

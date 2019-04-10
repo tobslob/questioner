@@ -1,3 +1,4 @@
+process.env.NODE_ENV='test';
 import chai from 'chai';
 import jwt from 'jsonwebtoken';
 import sinon from 'sinon';

@@ -24,7 +24,7 @@ router.get('/:id', checkAuth, rsvpControllers.get_rsvp);
 
 
 /*
- *restful api to delete rsvp
+ *delete rsvp
  */
 router.delete('/:id', checkAuth, rsvpControllers.delete_rsvp);
 
