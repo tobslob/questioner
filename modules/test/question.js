@@ -75,6 +75,58 @@ describe('QUESTION', () => {
             })
             .catch((err) => done(err));
     });
+    it('should not vote a question if not found', (done) => {
+        request(app)
+            .post('/api/v1/question/8a732477-b083-450c-ac69-c0710f71d080/upvote')
+            .set('Authorization', 'Bearer '+token)
+            .then((res) => {
+                expect(res.status).to.equal(404);
+                expect(res.body).to.be.an('object');
+                expect(res.body).to.have.property('error');
+                done();
+            })
+            .catch((err) => done(err));
+    });
+    it('should successfully upvote a question', (done) => {
+        request(app)
+            .post(`/api/v1/question/${questionId}/upvote`)
+            .set('Authorization', 'Bearer '+token)
+            .send({
+                title: faker.lorem.word(10),
+                body: faker.lorem.text()
+            })
+            .then((res) => {
+                expect(res.status).to.equal(201);
+                expect(res.body).to.be.an('object');
+                expect(res.body).to.have.property('message');
+                done();
+            })
+            .catch((err) => done(err));
+    });
+    it('should not downvote a question if not found', (done) => {
+        request(app)
+            .post('/api/v1/question/8a732477-b083-450c-ac69-c0710f71d080/downvote')
+            .set('Authorization', 'Bearer '+token)
+            .then((res) => {
+                expect(res.status).to.equal(404);
+                expect(res.body).to.be.an('object');
+                expect(res.body).to.have.property('error');
+                done();
+            })
+            .catch((err) => done(err));
+    });
+    it('should successfully downvote a question', (done) => {
+        request(app)
+            .post(`/api/v1/question/${questionId}/downvote`)
+            .set('Authorization', 'Bearer '+token)
+            .then((res) => {
+                expect(res.status).to.equal(201);
+                expect(res.body).to.be.an('object');
+                expect(res.body).to.have.property('message');
+                done();
+            })
+            .catch((err) => done(err));
+    });
 });
 
 export { questionId };

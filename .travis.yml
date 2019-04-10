@@ -1,11 +1,16 @@
 language: node_js
 node_js:
-  - "stable"
-  - "node"
-branches:
-  only:
-    - master
-    - stable
+  - "10.14.2"
+
+services:
+  - postgresql
+
+cache:
+  directories: 
+    - "node_modules"
+before_install:
+  - "npm install"
 before_script:
-  - npm install -g gulp-cli
-script: gulp travis
+  - psql -c 'create database travis_ci_test;' -U postgres
+script:
+  - "npm run test"
