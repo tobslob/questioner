@@ -63,11 +63,6 @@ exports.post_user = async (req, res) => {
             token: token
         });
     } catch (err) {
-        if (error.routine === '_bt_check_unique') {
-            return res.status(400).json({
-                message: 'Email already exist'
-            });
-        }
         return res.status(400).json({
             message: 'an error occur'
         });
