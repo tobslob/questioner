@@ -12,3 +12,4 @@ before_script:
   - psql -c 'create database travis_ci_test;' -U postgres
 script:
   - "npm run test"
+install: travis_wait 30  
