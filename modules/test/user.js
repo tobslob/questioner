@@ -205,17 +205,17 @@ describe('USER', () => {
             })
             .catch((error) => done(error));
     });
-    it('Should successfully delete a single user', (done) => {
-        request(app)
-            .delete(`/api/v1/user/${userId}`)
-            .set('Authorization', 'Bearer '+token)
-            .then((res) => {
-                expect(res.body).to.be.an('object');
-                expect(res.status).to.be.equals(200);
-                done();
-            })
-            .catch((error) => done(error));
-    });
+    // it('Should successfully delete a single user', (done) => {
+    //     request(app)
+    //         .delete(`/api/v1/user/${userId}`)
+    //         .set('Authorization', 'Bearer '+token)
+    //         .then((res) => {
+    //             expect(res.body).to.be.an('object');
+    //             expect(res.status).to.be.equals(200);
+    //             done();
+    //         })
+    //         .catch((error) => done(error));
+    // });
 });
 
 export {
