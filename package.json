@@ -25,7 +25,6 @@
     "joi": "^14.3.1",
     "jsonwebtoken": "^8.4.0",
     "make-runnable": "^1.3.6",
-    "mocha": "^5.2.0",
     "mockgoose": "^8.0.1",
     "moment": "^2.24.0",
     "mongoose": "^5.4.14",
@@ -33,10 +32,7 @@
     "multer": "^1.4.1",
     "parser": "^0.1.4",
     "pg": "^7.9.0",
-    "should": "^13.2.3",
-    "should-http": "^0.1.1",
     "sinon": "^7.3.1",
-    "supertest": "^3.4.2",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
@@ -64,7 +60,7 @@
     "eslint": "eslint . --fix",
     "babel-preset-es2015": "^6.3.13",
     "pretest": "eslint --ignore-path .gitignore .",
-    "test": "cross-env NODE_ENV=test nyc --reporter=html --reporter=text mocha --require @babel/register --timeout 120000 -- modules/test --exit",
+    "test": "cross-env NODE_ENV=test nyc --reporter=html --reporter=text mocha --exit --require @babel/register --timeout 120000 -- modules/test",
     "coverage": "nyc npm test && nyc report --reporter=text-lcov | coveralls",
     "showcoverage": "start ./coverage/index.html",
     "parser": "babel-eslint",
