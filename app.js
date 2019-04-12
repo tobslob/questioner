@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-import 'idempotent-babel-polyfill';
 import http from 'http';
 import express from 'express';
 import morgan from 'morgan';
