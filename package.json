@@ -40,6 +40,7 @@
     "@babel/core": "^7.2.2",
     "@babel/node": "^7.2.2",
     "@babel/preset-env": "^7.3.1",
+    "babel-cli": "^6.26.0",
     "babel-plugin-transform-regenerator": "^6.26.0",
     "babel-polyfill": "^6.26.0",
     "coveralls": "^3.0.3",
@@ -65,7 +66,7 @@
     "showcoverage": "start ./coverage/index.html",
     "parser": "babel-eslint",
     "start": "cross-env NODE_ENV=production nodemon app.js --exec babel-node",
-    "build": "babel src —-out-dir dist",
+    "build": "babel src --out-dir dist",
     "serve": "node dist/app.js",
     "create": "babel-node modules/model/db.js createTables"
   },
