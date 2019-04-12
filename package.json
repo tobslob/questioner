@@ -66,8 +66,6 @@
     "showcoverage": "start ./coverage/index.html",
     "parser": "babel-eslint",
     "start": "cross-env NODE_ENV=production nodemon app.js --exec babel-node",
-    "build": "babel src --out-dir dist",
-    "serve": "node dist/app.js",
     "create": "babel-node modules/model/db.js createTables"
   },
   "repository": {
