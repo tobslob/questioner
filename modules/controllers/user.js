@@ -131,7 +131,7 @@ exports.get_users = async (req, res) => {
 exports.get_user = async (req, res) => {
     const text = 'SELECT * FROM users WHERE id = $1';
     try {
-        const { rows } = await db.query(text, [req.params.id]);
+        const { rows } = await db.query(text, [req.param.id]);
         if (!rows[0]) {
             return res.status(404).json({message: 'user not found'});
         }
